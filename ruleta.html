@@ -253,7 +253,89 @@
     <script src="js/wheel.js"></script>
     <script src="js/ui.js"></script>
     
-    <!-- Archivo principal -->
-    <script src="ruleta.js"></script>
+    <!-- Script de inicialización -->
+    <script>
+        // Inicializar la ruleta cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Iniciando aplicación de ruleta...');
+            
+            try {
+                // Cargar configuración
+                if (window.ConfigModule?.loadWheelConfig) {
+                    await window.ConfigModule.loadWheelConfig();
+                }
+                
+                // Aplicar configuración visual
+                const wheelConfig = window.ConfigModule?.wheelConfig;
+                if (wheelConfig) {
+                    // Aplicar texto de felicitaciones
+                    const congratsText = wheelConfig.text?.congratsText || 'Felicidades Ganaste un/a:';
+                    const modalTitle = document.getElementById('modalTitle');
+                    if (modalTitle) {
+                        modalTitle.textContent = congratsText;
+                    }
+                    
+                    // Aplicar color de fondo
+                    const bgColor = wheelConfig.theme?.backgroundColor || '#d6005d';
+                    const raysBackground = document.querySelector('.rays-background');
+                    if (raysBackground && window.UtilsModule?.generateRaysGradient) {
+                        raysBackground.style.backgroundColor = bgColor;
+                        const raysGradient = window.UtilsModule.generateRaysGradient(bgColor);
+                        raysBackground.style.background = `${raysGradient}, ${bgColor}`;
+                    }
+                    
+                    // Aplicar logo
+                    const logo = document.querySelector('.center-logo');
+                    if (logo) {
+                        logo.src = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
+                    }
+                    
+                    // Actualizar favicon
+                    if (window.UtilsModule?.updateFavicon) {
+                        window.UtilsModule.updateFavicon(wheelConfig.logo?.src || 'images/Auto Americana Logo.svg');
+                    }
+                }
+                
+                // Inicializar AudioManager
+                if (window.AudioModule?.initAudioManager) {
+                    window.AudioModule.initAudioManager();
+                }
+                
+                // Crear instancia de la ruleta
+                if (window.WheelModule?.PrizeWheel) {
+                    const wheelInstance = new window.WheelModule.PrizeWheel();
+                    wheelInstance.init();
+                    window.wheelInstance = wheelInstance;
+                }
+                
+                // Inicializar configuración de UI
+                if (window.UIModule?.initSettings) {
+                    window.UIModule.initSettings();
+                }
+                
+                // Configurar listeners de fullscreen
+                document.addEventListener('fullscreenchange', () => {
+                    if (window.UtilsModule?.updateFullscreenState) {
+                        window.UtilsModule.updateFullscreenState();
+                    }
+                });
+                document.addEventListener('webkitfullscreenchange', () => {
+                    if (window.UtilsModule?.updateFullscreenState) {
+                        window.UtilsModule.updateFullscreenState();
+                    }
+                });
+                document.addEventListener('msfullscreenchange', () => {
+                    if (window.UtilsModule?.updateFullscreenState) {
+                        window.UtilsModule.updateFullscreenState();
+                    }
+                });
+                
+                console.log('✅ Ruleta inicializada correctamente con todos los módulos');
+                
+            } catch (error) {
+                console.error('❌ Error inicializando la ruleta:', error);
+            }
+        });
+    </script>
 </body>
 </html>
