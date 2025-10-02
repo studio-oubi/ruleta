@@ -41,7 +41,7 @@
       "congratsText": "Felicidades Ganaste un/a:"
     },
     "logo": {
-      "src": "img memory/Auto Americana Logo.svg"
+      "src": "images/Auto Americana Logo.svg"
     },
     "grandPrizes": [
       {
@@ -97,7 +97,7 @@
       "congratsText": "Felicidades Ganaste un/a:"
     },
     "logo": {
-      "src": "img memory/Auto Americana Logo.svg"
+      "src": "images/Auto Americana Logo.svg"
     },
     "grandPrizes": [
       {

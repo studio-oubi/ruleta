@@ -287,12 +287,25 @@
                     // Aplicar logo
                     const logo = document.querySelector('.center-logo');
                     if (logo) {
-                        logo.src = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
+                        const logoSrc = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
+                        logo.src = logoSrc;
+                        console.log('🖼️ Logo aplicado:', logoSrc);
                     }
                     
                     // Actualizar favicon
                     if (window.UtilsModule?.updateFavicon) {
-                        window.UtilsModule.updateFavicon(wheelConfig.logo?.src || 'images/Auto Americana Logo.svg');
+                        const faviconSrc = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
+                        window.UtilsModule.updateFavicon(faviconSrc);
+                        console.log('🔄 Favicon actualizado:', faviconSrc);
+                    }
+                } else {
+                    console.warn('⚠️ wheelConfig no disponible, aplicando configuración por defecto');
+                    
+                    // Aplicar logo por defecto si no hay configuración
+                    const logo = document.querySelector('.center-logo');
+                    if (logo) {
+                        logo.src = 'images/Auto Americana Logo.svg';
+                        console.log('🖼️ Logo por defecto aplicado');
                     }
                 }
                 
