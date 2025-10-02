@@ -1,0 +1,116 @@
+{
+  "current": {
+    "prizes": [
+      { "text": "TANQUE LLENO", "quantity": 1, "isNegative": false },
+      { "text": "NEVERA", "quantity": 1, "isNegative": false },
+      { "text": "TINTADO", "quantity": 1, "isNegative": false },
+      { "text": "NEVERITA", "quantity": 1, "isNegative": false },
+      { "text": "US $300", "quantity": 1, "isNegative": false },
+      { "text": "US $100", "quantity": 1, "isNegative": false },
+      { "text": "ACEITE AUTO", "quantity": 1, "isNegative": false },
+      { "text": "ACCESORIO AUTO", "quantity": 1, "isNegative": false },
+      { "text": "LAVADO PREMIUM", "quantity": 1, "isNegative": false },
+      { "text": "VUELVE A INTENTARLO", "quantity": 3, "isNegative": true },
+      { "text": "MEJOR SUERTE", "quantity": 2, "isNegative": true },
+      { "text": "INTÉNTALO OTRA VEZ", "quantity": 4, "isNegative": true }
+    ],
+    "colorPalette": [
+      "#dc143c",
+      "#ffd700", 
+      "#8b0000",
+      "#2e8b57",
+      "#ff8c00",
+      "#4169e1",
+      "#ff6b35",
+      "#4ecdc4",
+      "#45b7d1"
+    ],
+    "theme": {
+      "backgroundColor": "#d6005d",
+      "textColor": "#ffffff"
+    },
+    "consolationColors": {
+      "backgroundColor": "#000000",
+      "textColor": "#ffffff"
+    },
+    "audio": {
+      "volume": 0.7,
+      "isMuted": false
+    },
+    "text": {
+      "congratsText": "Felicidades Ganaste un/a:"
+    },
+    "logo": {
+      "src": "img memory/Auto Americana Logo.svg"
+    },
+    "grandPrizes": [
+      {
+        "enabled": true,
+        "name": "iPhone 15 Pro",
+        "probability": 0,
+        "colors": {
+          "backgroundColor": "#ffd700",
+          "textColor": "#000000"
+        }
+      }
+    ]
+  },
+  "default": {
+    "prizes": [
+      { "text": "TANQUE LLENO", "quantity": 1, "isNegative": false },
+      { "text": "NEVERA", "quantity": 1, "isNegative": false },
+      { "text": "TINTADO", "quantity": 1, "isNegative": false },
+      { "text": "NEVERITA", "quantity": 1, "isNegative": false },
+      { "text": "US $300", "quantity": 1, "isNegative": false },
+      { "text": "US $100", "quantity": 1, "isNegative": false },
+      { "text": "ACEITE AUTO", "quantity": 1, "isNegative": false },
+      { "text": "ACCESORIO AUTO", "quantity": 1, "isNegative": false },
+      { "text": "LAVADO PREMIUM", "quantity": 1, "isNegative": false },
+      { "text": "VUELVE A INTENTARLO", "quantity": 3, "isNegative": true },
+      { "text": "MEJOR SUERTE", "quantity": 2, "isNegative": true },
+      { "text": "INTÉNTALO OTRA VEZ", "quantity": 4, "isNegative": true }
+    ],
+    "colorPalette": [
+      "#dc143c",
+      "#ffd700", 
+      "#8b0000",
+      "#2e8b57",
+      "#ff8c00",
+      "#4169e1",
+      "#ff6b35",
+      "#4ecdc4",
+      "#45b7d1"
+    ],
+    "theme": {
+      "backgroundColor": "#d6005d",
+      "textColor": "#ffffff"
+    },
+    "consolationColors": {
+      "backgroundColor": "#000000",
+      "textColor": "#ffffff"
+    },
+    "audio": {
+      "volume": 0.7,
+      "isMuted": false
+    },
+    "text": {
+      "congratsText": "Felicidades Ganaste un/a:"
+    },
+    "logo": {
+      "src": "img memory/Auto Americana Logo.svg"
+    },
+    "grandPrizes": [
+      {
+        "enabled": false,
+        "name": "iPhone 15 Pro",
+        "probability": 5,
+        "colors": {
+          "backgroundColor": "#ffd700",
+          "textColor": "#000000"
+        }
+      }
+    ]
+  },
+  "presets": {},
+  "version": "2.0.0"
+}
