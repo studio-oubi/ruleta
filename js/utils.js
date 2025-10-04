@@ -250,6 +250,19 @@ function clearConfetti(confettiInterval) {
 
 // Función para crear degradado radial para segmentos de ruleta
 function createWheelSegmentGradient(ctx, centerX, centerY, baseColor, radius) {
+    // Manejar colores especiales (como negro para consuelos)
+    if (baseColor === '#000000' || baseColor === '#000') {
+        // Para colores muy oscuros, crear un degradado sutil
+        const gradient = ctx.createRadialGradient(
+            centerX, centerY, 0,
+            centerX, centerY, radius
+        );
+        gradient.addColorStop(0, '#333333');  // Centro gris oscuro
+        gradient.addColorStop(0.6, '#000000'); // Negro en el medio
+        gradient.addColorStop(1, '#000000');   // Negro en el borde
+        return gradient;
+    }
+    
     const hsl = hexToHSLInit(baseColor);
     
     // Crear variaciones del color base

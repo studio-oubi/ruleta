@@ -173,17 +173,34 @@ class PrizeWheel {
                 isNegative: prize.isNegative
             });
             
-            // Crear degradado radial para el segmento
-            const gradient = window.UtilsModule?.createWheelSegmentGradient(ctx, 0, 0, prizeColor, this.radius);
+            // Crear degradado radial para el segmento (con fallback a color sólido)
+            let fillStyle = prizeColor; // Fallback por defecto
             
-            // Dibujar segmento con degradado
+            try {
+                if (window.UtilsModule?.createWheelSegmentGradient) {
+                    const gradient = window.UtilsModule.createWheelSegmentGradient(ctx, 0, 0, prizeColor, this.radius);
+                    if (gradient) {
+                        fillStyle = gradient;
+                        console.log(`✨ Aplicando degradado para segmento ${index}:`, prizeColor);
+                    } else {
+                        console.warn(`⚠️ No se pudo crear gradiente para segmento ${index}, usando color sólido`);
+                    }
+                } else {
+                    console.warn('⚠️ UtilsModule.createWheelSegmentGradient no disponible, usando color sólido');
+                }
+            } catch (error) {
+                console.error(`❌ Error creando gradiente para segmento ${index}:`, error);
+                fillStyle = prizeColor; // Fallback en caso de error
+            }
+            
+            // Dibujar segmento
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.arc(0, 0, this.radius, startAngle, endAngle);
             ctx.closePath();
             
-            // Usar color sólido para debugging
-            ctx.fillStyle = prizeColor;
+            // Aplicar color o degradado
+            ctx.fillStyle = fillStyle;
             ctx.fill();
             
             console.log(`🎯 Segmento ${index} dibujado con color:`, prizeColor);
