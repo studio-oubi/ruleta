@@ -1677,62 +1677,119 @@ function updateSponsorsDisplay() {
     console.log('✅ Display de sponsors actualizado');
 }
 
-// Función simple para cargar sponsors desde carpeta
-function loadSponsorsFromFolder() {
-    console.log('🔄 Cargando sponsors desde carpeta...');
+// Función dinámica para cargar sponsors desde carpeta
+async function loadSponsorsFromFolder() {
+    console.log('🔄 Cargando sponsors dinámicamente desde carpeta...');
     
     if (!window.ConfigModule?.wheelConfig) {
         alert('❌ Error: ConfigModule no disponible');
         return;
     }
     
-    // Lista de archivos que están en la carpeta images/sponsors/
-    const archivosEnCarpeta = [
-        'Geely-Logo.png',
-        'Jetour_logo.svg.png', 
-        'kia.svg',
-        'logo-banreservas-sin-slogan.png',
-        'viamar.png',
-        'Volvo-Logo.wine.svg',
-        'GC-A1.svg'
-    ];
-    
-    console.log(`📁 Archivos encontrados en carpeta: ${archivosEnCarpeta.length}`);
-    console.log('📁 Rutas de archivos:', archivosEnCarpeta);
-    
-    // Limpiar sponsors existentes
-    window.ConfigModule.wheelConfig.sponsors = [];
-    
-    // Agregar cada archivo como sponsor
-    archivosEnCarpeta.forEach((archivo, index) => {
-        const ruta = `images/sponsors/${archivo}`;
-        const nombre = archivo.replace(/\.(png|jpg|jpeg|svg|gif|webp)$/i, '')
-            .replace(/[-_]/g, ' ');
+    try {
+        // Mostrar indicador de carga
+        const loadBtn = document.querySelector('button[onclick="loadSponsorsFromFolder()"]');
+        if (loadBtn) {
+            loadBtn.textContent = '🔄 Cargando...';
+            loadBtn.disabled = true;
+        }
         
-        window.ConfigModule.wheelConfig.sponsors.push({
-            id: `sponsor_${index}`,
-            src: ruta,
-            name: nombre,
-            fromFolder: true
+        // Intentar conectar al servidor local primero
+        let sponsorsData;
+        try {
+            console.log('🌐 Intentando conectar al servidor local...');
+            const response = await fetch('http://localhost:3001/api/sponsors/list');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            sponsorsData = result.sponsors;
+            
+            console.log(`✅ Servidor local conectado. Encontrados ${sponsorsData.length} sponsors:`, sponsorsData);
+            
+        } catch (serverError) {
+            console.warn('⚠️ Servidor local no disponible, usando lista de respaldo:', serverError.message);
+            
+            // Fallback a lista hardcodeada si el servidor no está disponible
+            const archivosEnCarpeta = [
+                'Geely-Logo.png',
+                'Jetour_logo.svg.png', 
+                'kia.svg',
+                'logo-banreservas-sin-slogan.png',
+                'viamar.png',
+                'Volvo-Logo.wine.svg'
+            ];
+            
+            sponsorsData = archivosEnCarpeta.map((archivo, index) => {
+                const ext = archivo.match(/\.(png|jpg|jpeg|svg|gif|webp)$/i);
+                const name = archivo.replace(/\.(png|jpg|jpeg|svg|gif|webp)$/i, '')
+                    .replace(/[-_]/g, ' ');
+                
+                return {
+                    id: `sponsor_${index}`,
+                    filename: archivo,
+                    name: name,
+                    extension: ext ? ext[0] : '',
+                    path: `images/sponsors/${archivo}`,
+                    fromFolder: true,
+                    fallback: true
+                };
+            });
+            
+            console.log(`📁 Usando lista de respaldo con ${sponsorsData.length} archivos`);
+        }
+        
+        if (!sponsorsData || sponsorsData.length === 0) {
+            throw new Error('No se encontraron archivos de sponsors');
+        }
+        
+        // Limpiar sponsors existentes
+        window.ConfigModule.wheelConfig.sponsors = [];
+        
+        // Agregar cada sponsor encontrado
+        sponsorsData.forEach((sponsor, index) => {
+            window.ConfigModule.wheelConfig.sponsors.push({
+                id: sponsor.id,
+                src: sponsor.path,
+                name: sponsor.name,
+                filename: sponsor.filename,
+                extension: sponsor.extension,
+                fromFolder: true,
+                fallback: sponsor.fallback || false
+            });
+            
+            console.log(`✅ Agregado: ${sponsor.name} -> ${sponsor.path}`);
         });
         
-        console.log(`✅ Agregado: ${nombre} -> ${ruta}`);
-    });
-    
-    // Guardar en localStorage
-    window.ConfigModule.saveConfig();
-    
-    // Actualizar la vista
-    updateSponsorsCount();
-    updateSponsorsDisplay();
-    renderSponsorsCarousel();
-    
-    // Mostrar resultado
-    const mensaje = `✅ Se cargaron ${archivosEnCarpeta.length} logos desde la carpeta:\n\n` +
-                   archivosEnCarpeta.map(archivo => `• ${archivo}`).join('\n');
-    
-    alert(mensaje);
-    console.log('✅ Carga completada');
+        // Guardar en localStorage
+        window.ConfigModule.saveConfig();
+        
+        // Actualizar la vista
+        updateSponsorsCount();
+        updateSponsorsDisplay();
+        renderSponsorsCarousel();
+        
+        // Mostrar resultado
+        const mensaje = `✅ Se cargaron ${sponsorsData.length} logos desde la carpeta:\n\n` +
+                       sponsorsData.map(sponsor => `• ${sponsor.filename}`).join('\n') +
+                       (sponsorsData[0]?.fallback ? '\n\n⚠️ Usando lista de respaldo (servidor no disponible)' : '\n\n🌐 Cargado dinámicamente desde servidor');
+        
+        alert(mensaje);
+        console.log('✅ Carga completada');
+        
+    } catch (error) {
+        console.error('❌ Error cargando sponsors:', error);
+        alert(`❌ Error cargando sponsors: ${error.message}`);
+    } finally {
+        // Restaurar botón
+        const loadBtn = document.querySelector('button[onclick="loadSponsorsFromFolder()"]');
+        if (loadBtn) {
+            loadBtn.textContent = '🔄 Recargar desde carpeta';
+            loadBtn.disabled = false;
+        }
+    }
 }
 
 // Hacer la función disponible globalmente para el botón
