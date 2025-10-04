@@ -1232,14 +1232,24 @@ function removeGrandPrize(index) {
     const wheelConfig = window.ConfigModule?.wheelConfig;
     if (!wheelConfig) return;
     
-    if (wheelConfig.grandPrizes && wheelConfig.grandPrizes.length > 1) {
+    if (wheelConfig.grandPrizes && index >= 0 && index < wheelConfig.grandPrizes.length) {
+        const removedGrandPrize = wheelConfig.grandPrizes[index];
         wheelConfig.grandPrizes.splice(index, 1);
         renderGrandPrizes();
+        
+        // Guardar configuración
+        if (window.ConfigModule?.saveConfig) {
+            window.ConfigModule.saveConfig();
+        }
         
         // Aplicar cambios inmediatamente
         if (window.wheelInstance) {
             window.wheelInstance.drawWheel();
         }
+        
+        console.log('🗑️ Grand Prize eliminado:', removedGrandPrize);
+    } else {
+        console.warn('⚠️ No se pudo eliminar Grand Prize: índice inválido o array vacío');
     }
 }
 
