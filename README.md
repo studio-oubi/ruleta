@@ -1,60 +1,50 @@
-# Ruleta Auto Americana
+# Sistema de Ruleta - Configuración Simplificada
 
-Una ruleta interactiva de premios para Auto Americana con sistema de configuración avanzado.
+## ✅ Problema Solucionado
 
-## Estructura del Proyecto
+El sistema ahora maneja correctamente la configuración por defecto usando localStorage como respaldo. Cuando presionas "Establecer como Default", la configuración se guarda en el navegador y persiste entre sesiones.
 
-```
-ruleta/
-├── ruleta.html          # Archivo principal HTML
-├── ruleta.js           # Lógica principal de la ruleta
-├── ruleta-style.css    # Estilos CSS
-├── images/             # Imágenes y logos
-│   └── Auto Americana Logo.svg
-├── sounds/             # Archivos de audio
-│   └── Victory.mp3
-├── config/             # Archivos de configuración
-│   └── wheelCONF.JSON
-└── assets/             # Recursos adicionales
-```
+## 🔧 Cómo Funciona
 
-## Características
+### 1. Sistema de Guardado
+- **localStorage**: La configuración se guarda automáticamente en el navegador
+- **Prioridad de carga**: Al cargar la página, se prioriza la configuración del localStorage si existe
+- **Detección de cambios**: El sistema detecta si hay cambios pendientes de guardar
 
-- 🎯 **Ruleta Interactiva**: Sistema de ruleta con física realista
-- 🎁 **Gestión de Premios**: Configuración de premios reales y consuelos
-- 🏆 **Grand Prizes**: Sistema de premios especiales con animaciones
-- 🎨 **Personalización**: Temas de colores y configuración visual
-- 🔊 **Audio**: Efectos de sonido configurables
-- 💾 **Presets**: Guardado y carga de configuraciones
-- 📱 **Responsive**: Diseño adaptable a diferentes pantallas
+### 2. Proceso de "Establecer como Default"
+1. **Hacer cambios** en la configuración
+2. **Presionar "Establecer como Default"**
+3. **Confirmar** la operación
+4. **Descargar archivo JSON** (opcional) para persistencia permanente
+5. **Reemplazar manualmente** el archivo `config/wheelCONF.JSON` si deseas persistencia total
 
-## Configuración
+## 🚀 Instrucciones de Uso
 
-1. Abrir `ruleta.html` en un navegador web
-2. Usar el botón de configuración (⚙️) para personalizar:
-   - Premios y cantidades
-   - Colores y temas
-   - Audio y efectos
-   - Logos y branding
+### Para cambios temporales (solo en esta sesión):
+1. Modifica la configuración
+2. Presiona "Establecer como Default"
+3. Selecciona "Cancelar" cuando pregunte sobre descargar el archivo
 
-## Uso
+### Para cambios permanentes:
+1. Modifica la configuración
+2. Presiona "Establecer como Default"
+3. Selecciona "OK" para descargar el archivo JSON
+4. Reemplaza manualmente el archivo `config/wheelCONF.JSON` con el descargado
 
-- Hacer clic en la ruleta para girar
-- La aguja indicará el premio ganado
-- Modal de resultado muestra el premio obtenido
-- Sistema de inventario para control de stock
+## 📁 Archivos Modificados
 
-## Tecnologías
+- `js/config.js`: Sistema de guardado mejorado con localStorage
+- `js/ui.js`: Función `setAsDefault()` simplificada
+- `ruleta.html`: Interfaz limpia sin indicadores de servidor
+- `ruleta-style.css`: Estilos simplificados
 
-- HTML5 Canvas para la ruleta
-- GSAP para animaciones
-- Howler.js para audio
-- Canvas Confetti para efectos visuales
-- LocalStorage para persistencia de configuración
+## 💡 Notas Importantes
 
-## Archivos Principales
+- ✅ Los cambios se mantienen entre sesiones del navegador
+- ✅ No requiere servidor ni instalaciones adicionales
+- ✅ Sistema simple y confiable
+- ⚠️ Para persistencia total entre diferentes navegadores/dispositivos, reemplaza manualmente el archivo JSON
 
-- `ruleta.html`: Interfaz principal
-- `ruleta.js`: Lógica de la aplicación
-- `ruleta-style.css`: Estilos y diseño
-- `config/wheelCONF.JSON`: Configuración por defecto
+## 🎯 Resultado
+
+Ahora cuando presiones "Establecer como Default", la configuración se guardará en el navegador y persistirá entre refrescos de página. El sistema es simple, confiable y no requiere servidor.

@@ -1,8 +1,17 @@
 // Módulo de premios para la ruleta
 // Maneja la distribución, espaciado y lógica de premios
 
+console.log('🔄 Cargando PrizesModule...');
+
 // Función para distribuir premios con espaciado uniforme de consuelos
 function distributePrizesWithConsolationSpacing(prizes) {
+    console.log('🎯 distributePrizesWithConsolationSpacing llamada con:', prizes);
+    
+    if (!prizes || prizes.length === 0) {
+        console.error('❌ No hay premios para distribuir');
+        return [];
+    }
+    
     const allPrizes = [];
     
     // Expandir premios según su cantidad
@@ -26,7 +35,8 @@ function distributePrizesWithConsolationSpacing(prizes) {
                 allPrizes.push({
                     text: prize.text,
                     isNegative: prize.isNegative,
-                    textColor: window.ConfigModule?.wheelConfig?.consolationColors?.textColor || '#ffffff'
+                    textColor: window.ConfigModule?.wheelConfig?.consolationColors?.textColor || '#ffffff',
+                    hideText: prize.hideText || false
                 });
             }
         }
@@ -63,7 +73,8 @@ function distributePrizesWithConsolationSpacing(prizes) {
     const consolationPrizes = allPrizes.filter(p => p.isNegative);
     
     // Asignar colores a premios regulares
-    const wheelColorPalette = window.ConfigModule?.wheelColorPalette || ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1'];
+    // Usar directamente wheelConfig.colorPalette para obtener los colores más actualizados
+    const wheelColorPalette = wheelConfig?.colorPalette || ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1'];
     const colors = wheelColorPalette.length > 0 ? wheelColorPalette : ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1'];
     regularPrizes.forEach((prize, index) => {
         if (prize.isGrandPrize) {
@@ -157,6 +168,9 @@ function distributePrizesWithConsolationSpacing(prizes) {
         verifyConsolationSpacing(finalPrizes);
     }
     
+    console.log('🎯 Premios distribuidos finales:', finalPrizes);
+    console.log('🎯 Total de premios:', finalPrizes.length);
+    
     return finalPrizes;
 }
 
@@ -229,9 +243,9 @@ function getPrizeIcon(prizeText) {
         'ACEITE AUTO': '🛢️',
         'ACCESORIO AUTO': '🔧',
         'LAVADO PREMIUM': '💎',
-        'VUELVE A INTENTARLO': '🔄',
-        'MEJOR SUERTE': '😔',
-        'INTÉNTALO OTRA VEZ': '🎯'
+        'VUELVE A INTENTARLO': '😢',
+        'MEJOR SUERTE': '😞',
+        'INTÉNTALO OTRA VEZ': '😔'
     };
     
     return icons[prizeText] || '🏆';
@@ -241,7 +255,14 @@ function getPrizeIcon(prizeText) {
 function getModalTitle(prize) {
     const wheelConfig = window.ConfigModule?.wheelConfig;
     if (prize.isNegative) {
-        return 'Mejor suerte la próxima vez';
+        // Títulos más tristes para premios de consuelo
+        const sadTitles = [
+            'Mejor suerte la próxima vez 😔',
+            'No fue esta vez 😞',
+            'Inténtalo de nuevo 😢',
+            'Sigue intentando 💪'
+        ];
+        return sadTitles[Math.floor(Math.random() * sadTitles.length)];
     } else {
         return wheelConfig?.text?.congratsText || 'Felicidades Ganaste un/a:';
     }
@@ -256,3 +277,5 @@ window.PrizesModule = {
     getPrizeIcon,
     getModalTitle
 };
+
+console.log('✅ PrizesModule exportado correctamente:', window.PrizesModule);

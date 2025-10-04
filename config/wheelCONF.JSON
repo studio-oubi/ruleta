@@ -1,22 +1,82 @@
 {
   "current": {
     "prizes": [
-      { "text": "TANQUE LLENO", "quantity": 1, "isNegative": false },
-      { "text": "NEVERA", "quantity": 1, "isNegative": false },
-      { "text": "TINTADO", "quantity": 1, "isNegative": false },
-      { "text": "NEVERITA", "quantity": 1, "isNegative": false },
-      { "text": "US $300", "quantity": 1, "isNegative": false },
-      { "text": "US $100", "quantity": 1, "isNegative": false },
-      { "text": "ACEITE AUTO", "quantity": 1, "isNegative": false },
-      { "text": "ACCESORIO AUTO", "quantity": 1, "isNegative": false },
-      { "text": "LAVADO PREMIUM", "quantity": 1, "isNegative": false },
-      { "text": "VUELVE A INTENTARLO", "quantity": 3, "isNegative": true },
-      { "text": "MEJOR SUERTE", "quantity": 2, "isNegative": true },
-      { "text": "INTÉNTALO OTRA VEZ", "quantity": 4, "isNegative": true }
+      {
+        "text": "TANQUE LLENO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "NEVERA",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "TINTADO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "NEVERITA",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "US $300",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "US $100",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "ACEITE AUTO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "ACCESORIO AUTO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "LAVADO PREMIUM",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "VUELVE A INTENTARLO",
+        "quantity": 3,
+        "isNegative": true,
+        "hideText": false
+      },
+      {
+        "text": "MEJOR SUERTE",
+        "quantity": 2,
+        "isNegative": true,
+        "hideText": false
+      },
+      {
+        "text": "INTÉNTALO OTRA VEZ",
+        "quantity": 4,
+        "isNegative": true,
+        "hideText": false
+      }
     ],
     "colorPalette": [
       "#dc143c",
-      "#ffd700", 
+      "#ffd700",
       "#8b0000",
       "#2e8b57",
       "#ff8c00",
@@ -26,22 +86,33 @@
       "#45b7d1"
     ],
     "theme": {
-      "backgroundColor": "#d6005d",
+      "backgroundColor": "#6a1010",
       "textColor": "#ffffff"
     },
     "consolationColors": {
       "backgroundColor": "#000000",
-      "textColor": "#ffffff"
+      "textColor": "#ffffff",
+      "hideText": false
     },
     "audio": {
       "volume": 0.7,
       "isMuted": false
     },
+    "display": {
+      "fullscreen": false
+    },
     "text": {
       "congratsText": "Felicidades Ganaste un/a:"
     },
     "logo": {
-      "src": "images/Auto Americana Logo.svg"
+      "src": "images/Auto Americana Logo.svg",
+      "enabled": true
+    },
+    "presets": {},
+    "version": "2.0.0",
+    "topLogo": {
+      "src": "images/Auto Americana Logo.svg",
+      "enabled": true
     },
     "grandPrizes": [
       {
@@ -53,26 +124,119 @@
           "textColor": "#000000"
         }
       }
-    ]
+    ],
+    "sponsors": [
+      {
+        "id": "geely",
+        "src": "images/sponsors/Geely-Logo.png",
+        "name": "Geely",
+        "fromFolder": true
+      },
+      {
+        "id": "jetour",
+        "src": "images/sponsors/Jetour_logo.svg.png",
+        "name": "Jetour",
+        "fromFolder": true
+      },
+      {
+        "id": "kia",
+        "src": "images/sponsors/kia.svg",
+        "name": "Kia",
+        "fromFolder": true
+      },
+      {
+        "id": "banreservas",
+        "src": "images/sponsors/logo-banreservas-sin-slogan.png",
+        "name": "Banreservas",
+        "fromFolder": true
+      },
+      {
+        "id": "viamar",
+        "src": "images/sponsors/viamar.png",
+        "name": "Viamar",
+        "fromFolder": true
+      }
+    ],
+    "sponsorsEnabled": true
   },
   "default": {
     "prizes": [
-      { "text": "TANQUE LLENO", "quantity": 1, "isNegative": false },
-      { "text": "NEVERA", "quantity": 1, "isNegative": false },
-      { "text": "TINTADO", "quantity": 1, "isNegative": false },
-      { "text": "NEVERITA", "quantity": 1, "isNegative": false },
-      { "text": "US $300", "quantity": 1, "isNegative": false },
-      { "text": "US $100", "quantity": 1, "isNegative": false },
-      { "text": "ACEITE AUTO", "quantity": 1, "isNegative": false },
-      { "text": "ACCESORIO AUTO", "quantity": 1, "isNegative": false },
-      { "text": "LAVADO PREMIUM", "quantity": 1, "isNegative": false },
-      { "text": "VUELVE A INTENTARLO", "quantity": 3, "isNegative": true },
-      { "text": "MEJOR SUERTE", "quantity": 2, "isNegative": true },
-      { "text": "INTÉNTALO OTRA VEZ", "quantity": 4, "isNegative": true }
+      {
+        "text": "TANQUE LLENO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "NEVERA",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "TINTADO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "NEVERITA",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "US $300",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "US $100",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "ACEITE AUTO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "ACCESORIO AUTO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "LAVADO PREMIUM",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
+      },
+      {
+        "text": "VUELVE A INTENTARLO",
+        "quantity": 3,
+        "isNegative": true,
+        "hideText": false
+      },
+      {
+        "text": "MEJOR SUERTE",
+        "quantity": 2,
+        "isNegative": true,
+        "hideText": false
+      },
+      {
+        "text": "INTÉNTALO OTRA VEZ",
+        "quantity": 4,
+        "isNegative": true,
+        "hideText": false
+      }
     ],
     "colorPalette": [
       "#dc143c",
-      "#ffd700", 
+      "#ffd700",
       "#8b0000",
       "#2e8b57",
       "#ff8c00",
@@ -82,34 +246,105 @@
       "#45b7d1"
     ],
     "theme": {
-      "backgroundColor": "#d6005d",
+      "backgroundColor": "#7e1111",
       "textColor": "#ffffff"
     },
     "consolationColors": {
       "backgroundColor": "#000000",
-      "textColor": "#ffffff"
+      "textColor": "#ffffff",
+      "hideText": false
     },
     "audio": {
       "volume": 0.7,
       "isMuted": false
     },
+    "display": {
+      "fullscreen": false
+    },
     "text": {
       "congratsText": "Felicidades Ganaste un/a:"
     },
     "logo": {
-      "src": "images/Auto Americana Logo.svg"
+      "src": "images/Auto Americana Logo.svg",
+      "enabled": true
+    },
+    "presets": {},
+    "version": "2.0.0",
+    "topLogo": {
+      "src": "images/Auto Americana Logo.svg",
+      "enabled": true
     },
     "grandPrizes": [
       {
-        "enabled": false,
+        "enabled": true,
         "name": "iPhone 15 Pro",
-        "probability": 5,
+        "probability": 0,
         "colors": {
           "backgroundColor": "#ffd700",
           "textColor": "#000000"
         }
       }
-    ]
+    ],
+    "sponsors": [
+      {
+        "id": "geely",
+        "src": "images/sponsors/Geely-Logo.png",
+        "name": "Geely",
+        "fromFolder": true
+      },
+      {
+        "id": "jetour",
+        "src": "images/sponsors/Jetour_logo.svg.png",
+        "name": "Jetour",
+        "fromFolder": true
+      },
+      {
+        "id": "kia",
+        "src": "images/sponsors/kia.svg",
+        "name": "Kia",
+        "fromFolder": true
+      },
+      {
+        "id": "banreservas",
+        "src": "images/sponsors/logo-banreservas-sin-slogan.png",
+        "name": "Banreservas",
+        "fromFolder": true
+      },
+      {
+        "id": "viamar",
+        "src": "images/sponsors/viamar.png",
+        "name": "Viamar",
+        "fromFolder": true
+      }
+    ],
+    "sponsorsEnabled": true,
+    "sponsorFilters": {
+      "hue": {
+        "enabled": false,
+        "value": "0"
+      },
+      "saturation": {
+        "enabled": false,
+        "value": "100"
+      },
+      "brightness": {
+        "enabled": false,
+        "value": "100"
+      },
+      "contrast": {
+        "enabled": false,
+        "value": "100"
+      }
+    },
+    "grandPrize": {
+      "enabled": false,
+      "name": "iPhone 15 Pro",
+      "probability": 5,
+      "colors": {
+        "backgroundColor": "#ffd700",
+        "textColor": "#000000"
+      }
+    }
   },
   "presets": {},
   "version": "2.0.0"

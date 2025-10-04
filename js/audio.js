@@ -84,6 +84,46 @@ class AudioManager {
         }
     }
     
+    // Reproducir sonido de pérdida/consuelo
+    playLoseSound() {
+        if (this.isMuted || this.isPlayingWinSound) return;
+        
+        this.isPlayingWinSound = true;
+        
+        try {
+            // Crear un sonido de pérdida usando Web Audio API para generar un tono triste
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Frecuencia baja para sonido triste
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.8);
+            
+            // Volumen que decae
+            gainNode.gain.setValueAtTime(this.volume * 0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+            
+            // Tipo de onda para sonido más suave
+            oscillator.type = 'sine';
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.8);
+            
+            // Resetear bandera después del sonido
+            setTimeout(() => {
+                this.isPlayingWinSound = false;
+            }, 800);
+            
+        } catch (e) {
+            console.error('❌ Audio de pérdida no disponible:', e);
+            this.isPlayingWinSound = false;
+        }
+    }
+    
     // Actualizar volumen
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
@@ -147,6 +187,11 @@ function playWinSound() {
     manager.playWinSound();
 }
 
+function playLoseSound() {
+    const manager = getAudioManager();
+    manager.playLoseSound();
+}
+
 function setAudioVolume(volume) {
     const manager = getAudioManager();
     manager.setVolume(volume);
@@ -170,6 +215,7 @@ window.AudioModule = {
     playSpinSound,
     playTickSound,
     playWinSound,
+    playLoseSound,
     setAudioVolume,
     setAudioMuted,
     toggleAudioMute

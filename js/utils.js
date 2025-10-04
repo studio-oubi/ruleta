@@ -248,6 +248,28 @@ function clearConfetti(confettiInterval) {
     }
 }
 
+// Función para crear degradado radial para segmentos de ruleta
+function createWheelSegmentGradient(ctx, centerX, centerY, baseColor, radius) {
+    const hsl = hexToHSLInit(baseColor);
+    
+    // Crear variaciones del color base
+    const lighterColor = hslToHexInit(hsl.h, hsl.s, Math.min(100, hsl.l + 15));
+    const darkerColor = hslToHexInit(hsl.h, hsl.s, Math.max(0, hsl.l - 20));
+    
+    // Crear degradado radial
+    const gradient = ctx.createRadialGradient(
+        centerX, centerY, 0,           // Centro del círculo
+        centerX, centerY, radius       // Radio del círculo
+    );
+    
+    // Agregar paradas de color
+    gradient.addColorStop(0, lighterColor);    // Centro más claro
+    gradient.addColorStop(0.6, baseColor);     // Color base en el medio
+    gradient.addColorStop(1, darkerColor);     // Borde más oscuro
+    
+    return gradient;
+}
+
 // Exportar funciones para uso en otros módulos
 window.UtilsModule = {
     hexToHSLInit,
@@ -256,6 +278,7 @@ window.UtilsModule = {
     hslToRgb,
     generateRaysGradient,
     hexToRgb,
+    createWheelSegmentGradient,
     enterFullscreen,
     exitFullscreen,
     updateFullscreenState,

@@ -15,17 +15,20 @@
     <link rel="shortcut icon" href="images/Auto Americana Logo.svg" id="dynamicFaviconShortcut">
 </head>
 <body>
+    <!-- Fondo con rayos -->
+    <div class="rays-background"></div>
+    
     <div class="ruleta-app">
         <!-- Botón de configuración -->
         <button class="settings-btn" id="settingsBtn"></button>
         
-        <!-- Estrella decorativa -->
-        <div class="decorative-star">✦</div>
         
         <!-- Contenedor de la ruleta -->
         <div class="wheel-section">
-            <!-- Fondo con rayos -->
-            <div class="rays-background"></div>
+            <!-- Logo superior -->
+            <div class="top-logo-container" id="topLogoContainer">
+                <div id="topLogo" class="top-logo"></div>
+            </div>
             
             <div class="wheel-wrapper">
                 <!-- Base de la ruleta -->
@@ -45,6 +48,13 @@
                 <div class="wheel-pointer">
                     <span class="material-icons">location_on</span>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Carrusel de patrocinadores -->
+        <div class="sponsors-carousel" id="sponsorsCarousel">
+            <div class="sponsors-track" id="sponsorsTrack">
+                <!-- Los logos se generarán dinámicamente -->
             </div>
         </div>
         
@@ -80,7 +90,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Cambiar Logo</label>
-                            <div class="file-upload">
+                            <div class="file-upload" onclick="document.getElementById('logoInput').click()">
                                 <input type="file" id="logoInput" accept="image/*">
                                 <div class="file-upload-text">
                                     <p>📁 Haz clic para seleccionar una imagen</p>
@@ -89,6 +99,34 @@
                             </div>
                         </div>
                         <button type="button" class="btn-secondary" onclick="resetLogo()">🔄 Restaurar Logo Original</button>
+                    </div>
+
+                    <!-- Logo Superior -->
+                    <div class="config-section">
+                        <h3 class="section-title">🖼️ Logo Superior</h3>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="topLogoEnabled" class="checkbox-input">
+                                Mostrar Logo Superior
+                            </label>
+                        </div>
+                        <div class="form-group" id="topLogoControls" style="display: none;">
+                            <label class="form-label">Logo Superior Actual</label>
+                            <div class="logo-preview-container">
+                                <img id="topLogoPreview" class="logo-preview" src="" alt="Top Logo Preview">
+                            </div>
+                        </div>
+                        <div class="form-group" id="topLogoFileControls" style="display: none;">
+                            <label class="form-label">Cambiar Logo Superior</label>
+                            <div class="file-upload" onclick="document.getElementById('topLogoInput').click()">
+                                <input type="file" id="topLogoInput" accept="image/*">
+                                <div class="file-upload-text">
+                                    <p>📁 Haz clic para seleccionar una imagen</p>
+                                    <p class="file-hint">Formatos: JPG, PNG, SVG (máx. 2MB)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-secondary" id="resetTopLogo" style="display: none;" onclick="resetTopLogo()">🔄 Restaurar Logo Superior Original</button>
                     </div>
 
                     <!-- Audio -->
@@ -171,6 +209,12 @@
                             </div>
                             <div class="prizes-section">
                                 <h4 class="prizes-section-title">🔄 Opciones de Consuelo</h4>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <input type="checkbox" id="hideConsolationText" class="form-checkbox">
+                                        Ocultar texto de consolación en la ruleta
+                                    </label>
+                                </div>
                                 <div id="negativePrizesList">
                                     <!-- Se genera dinámicamente -->
                                 </div>
@@ -196,6 +240,76 @@
                         <div class="form-group">
                             <label class="form-label">Texto de Felicitaciones</label>
                             <input type="text" id="congratsText" class="form-input" placeholder="Felicidades Ganaste un/a:">
+                        </div>
+                    </div>
+
+                    <!-- Patrocinadores -->
+                    <div class="config-section">
+                        <h3 class="section-title">🏢 Patrocinadores</h3>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="sponsorsEnabled" class="form-checkbox">
+                                Mostrar Patrocinadores
+                            </label>
+                        </div>
+                        <div class="form-group" id="sponsorsControls" style="display: none;">
+                            <label class="form-label">Agregar Logos de Patrocinadores</label>
+                            <div class="file-upload" onclick="document.getElementById('sponsorInput').click()">
+                                <input type="file" id="sponsorInput" accept="image/*" multiple>
+                                <div class="file-upload-text">
+                                    <p>📁 Haz clic para seleccionar imágenes</p>
+                                    <p class="file-hint">Formatos: JPG, PNG, SVG (máx. 2MB cada uno)</p>
+                                    <p class="file-hint">💡 Puedes seleccionar múltiples archivos a la vez</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="sponsorsList" style="display: none;">
+                            <label class="form-label">Logos de Patrocinadores</label>
+                            <div class="sponsors-stats">
+                                <p class="sponsors-count">Total de logos: <span id="sponsorsCount">0</span></p>
+                                <button type="button" class="btn-secondary" onclick="loadSponsorsFromFolder()">🔄 Recargar desde carpeta</button>
+                            </div>
+                            <div id="sponsorsPreview" class="sponsors-preview-container">
+                                <!-- Se genera dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="form-group" id="sponsorsFilter" style="display: none;">
+                            <label class="form-label">Filtro de Color para Logos</label>
+                            <div class="filter-controls">
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterHue" class="form-checkbox">
+                                        Matiz (Hue)
+                                    </label>
+                                    <input type="range" id="hueSlider" class="filter-slider" min="0" max="360" value="0">
+                                    <span id="hueValue">0°</span>
+                                </div>
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterSaturation" class="form-checkbox">
+                                        Saturación
+                                    </label>
+                                    <input type="range" id="saturationSlider" class="filter-slider" min="0" max="200" value="100">
+                                    <span id="saturationValue">100%</span>
+                                </div>
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterBrightness" class="form-checkbox">
+                                        Brillo
+                                    </label>
+                                    <input type="range" id="brightnessSlider" class="filter-slider" min="0" max="200" value="100">
+                                    <span id="brightnessValue">100%</span>
+                                </div>
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterContrast" class="form-checkbox">
+                                        Contraste
+                                    </label>
+                                    <input type="range" id="contrastSlider" class="filter-slider" min="0" max="200" value="100">
+                                    <span id="contrastValue">100%</span>
+                                </div>
+                                <button type="button" class="btn-secondary" onclick="resetSponsorFilters()">🔄 Resetear Filtros</button>
+                            </div>
                         </div>
                     </div>
 
@@ -292,6 +406,13 @@
                         console.log('🖼️ Logo aplicado:', logoSrc);
                     }
                     
+                    // Aplicar logo superior
+                    if (window.UIModule?.updateTopLogoDisplay) {
+                        console.log('🔄 Aplicando configuración del logo superior...');
+                        console.log('🔍 Configuración topLogo:', wheelConfig.topLogo);
+                        window.UIModule.updateTopLogoDisplay();
+                    }
+                    
                     // Actualizar favicon
                     if (window.UtilsModule?.updateFavicon) {
                         const faviconSrc = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
@@ -306,6 +427,16 @@
                     if (logo) {
                         logo.src = 'images/Auto Americana Logo.svg';
                         console.log('🖼️ Logo por defecto aplicado');
+                    }
+                    
+                    // Aplicar logo superior por defecto
+                    const topLogo = document.getElementById('topLogo');
+                    const topLogoContainer = document.getElementById('topLogoContainer');
+                    if (topLogo && topLogoContainer) {
+                        topLogo.style.setProperty('background-image', 'url(images/top-logo.png)', 'important');
+                        topLogoContainer.style.setProperty('display', 'block', 'important');
+                        topLogoContainer.style.setProperty('visibility', 'visible', 'important');
+                        console.log('🖼️ Logo superior por defecto aplicado');
                     }
                 }
                 
@@ -326,6 +457,27 @@
                     window.UIModule.initSettings();
                 }
                 
+                // Cargar configuración actual en la interfaz
+                if (window.UIModule?.loadCurrentSettings) {
+                    window.UIModule.loadCurrentSettings();
+                }
+                
+                // Inicializar carrusel de patrocinadores DESPUÉS de cargar configuración
+                if (window.UIModule?.initSponsorsCarousel) {
+                    window.UIModule.initSponsorsCarousel();
+                }
+                
+                // Cargar sponsors automáticamente si están habilitados
+                if (window.ConfigModule?.wheelConfig?.sponsorsEnabled && window.ConfigModule?.wheelConfig?.sponsors) {
+                    console.log('🔄 Cargando sponsors existentes...');
+                    if (window.UIModule?.renderSponsorsCarousel) {
+                        window.UIModule.renderSponsorsCarousel();
+                    }
+                    if (window.UIModule?.updateSponsorsDisplay) {
+                        window.UIModule.updateSponsorsDisplay();
+                    }
+                }
+                
                 // Configurar listeners de fullscreen
                 document.addEventListener('fullscreenchange', () => {
                     if (window.UtilsModule?.updateFullscreenState) {
@@ -344,6 +496,27 @@
                 });
                 
                 console.log('✅ Ruleta inicializada correctamente con todos los módulos');
+                
+                // Diagnóstico de premios
+                setTimeout(() => {
+                    console.log('🔍 DIAGNÓSTICO DE PREMIOS:');
+                    const wheelConfig = window.ConfigModule?.wheelConfig;
+                    if (wheelConfig) {
+                        console.log('✅ wheelConfig disponible:', wheelConfig);
+                        console.log('✅ Premios en configuración:', wheelConfig.prizes?.length || 0);
+                        console.log('✅ Premios detalle:', wheelConfig.prizes);
+                        
+                        if (window.PrizesModule?.distributePrizesWithConsolationSpacing) {
+                            const distributedPrizes = window.PrizesModule.distributePrizesWithConsolationSpacing(wheelConfig.prizes);
+                            console.log('✅ Premios distribuidos:', distributedPrizes.length);
+                            console.log('✅ Premios distribuidos detalle:', distributedPrizes);
+                        } else {
+                            console.error('❌ PrizesModule no disponible');
+                        }
+                    } else {
+                        console.error('❌ wheelConfig no disponible');
+                    }
+                }, 1000);
                 
             } catch (error) {
                 console.error('❌ Error inicializando la ruleta:', error);

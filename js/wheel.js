@@ -136,12 +136,26 @@ class PrizeWheel {
         
         // Usar el nuevo algoritmo de distribución inteligente
         const wheelConfig = window.ConfigModule?.wheelConfig;
-        if (!wheelConfig) return;
+        if (!wheelConfig) {
+            console.error('❌ wheelConfig no disponible en drawWheel');
+            return;
+        }
+        
+        console.log('🎯 drawWheel - wheelConfig:', wheelConfig);
+        console.log('🎯 drawWheel - prizes:', wheelConfig.prizes);
         
         const wheelPrizes = window.PrizesModule?.distributePrizesWithConsolationSpacing(wheelConfig.prizes) || [];
+        console.log('🎯 drawWheel - wheelPrizes resultantes:', wheelPrizes);
+        
+        // Verificar que hay premios para dibujar
+        if (!wheelPrizes || wheelPrizes.length === 0) {
+            console.error('❌ No hay premios para dibujar en la ruleta');
+            return;
+        }
         
         // Dibujar segmentos
         const segmentAngle = (Math.PI * 2) / wheelPrizes.length;
+        console.log('🎯 Dibujando', wheelPrizes.length, 'segmentos con ángulo:', segmentAngle);
         
         // Dibujar todos los segmentos primero
         wheelPrizes.forEach((prize, index) => {
@@ -151,13 +165,28 @@ class PrizeWheel {
             // Usar color del premio directamente
             const prizeColor = prize.bgColor || '#dc143c';
             
-            // Dibujar segmento con color sólido
+            console.log(`🎯 Segmento ${index}:`, {
+                text: prize.text,
+                color: prizeColor,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                isNegative: prize.isNegative
+            });
+            
+            // Crear degradado radial para el segmento
+            const gradient = window.UtilsModule?.createWheelSegmentGradient(ctx, 0, 0, prizeColor, this.radius);
+            
+            // Dibujar segmento con degradado
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.arc(0, 0, this.radius, startAngle, endAngle);
             ctx.closePath();
+            
+            // Usar color sólido para debugging
             ctx.fillStyle = prizeColor;
             ctx.fill();
+            
+            console.log(`🎯 Segmento ${index} dibujado con color:`, prizeColor);
         });
         
         // Restaurar opacidad completa
@@ -181,28 +210,33 @@ class PrizeWheel {
             ctx.lineCap = 'butt';
             ctx.stroke();
             
-            // Dibujar texto
-            ctx.save();
-            ctx.rotate(startAngle + segmentAngle / 2);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            // Dibujar texto (solo si no es premio de consolación con texto oculto)
+            const wheelConfig = window.ConfigModule?.wheelConfig;
+            const shouldHideText = prize.isNegative && (prize.hideText || wheelConfig?.consolationColors?.hideText);
             
-            ctx.shadowColor = 'rgba(0, 0, 0, 0)';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-            
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = prize.textColor;
-            const fontSize = this.radius * 0.08;
-            ctx.font = `400 ${fontSize}px "Oswald"`;
-            
-            const text = prize.text;
-            const textRadius = this.radius * 0.65;
-            
-            ctx.fillText(text, textRadius, 0);
-            
-            ctx.restore();
+            if (!shouldHideText) {
+                ctx.save();
+                ctx.rotate(startAngle + segmentAngle / 2);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = prize.textColor;
+                const fontSize = this.radius * 0.08;
+                ctx.font = `400 ${fontSize}px "Oswald"`;
+                
+                const text = prize.text;
+                const textRadius = this.radius * 0.65;
+                
+                ctx.fillText(text, textRadius, 0);
+                
+                ctx.restore();
+            }
         });
         
         ctx.restore();
@@ -593,7 +627,13 @@ class PrizeWheel {
         
         // Solo reproducir sonido si no viene de gran premio
         if (!this.isContinuingFromGrandPrize) {
-            this.playWinSound();
+            if (prize.isNegative) {
+                // Reproducir sonido de pérdida para premios de consuelo
+                window.AudioModule?.playLoseSound();
+            } else {
+                // Reproducir sonido de victoria para premios reales
+                this.playWinSound();
+            }
         }
         
         // Resetear la bandera
@@ -601,9 +641,12 @@ class PrizeWheel {
         
         this.modal.classList.add('show');
         
-        setTimeout(() => {
-            this.launchConfetti();
-        }, 100);
+        // Solo mostrar confeti para premios reales (no de consuelo)
+        if (!prize.isNegative) {
+            setTimeout(() => {
+                this.launchConfetti();
+            }, 100);
+        }
     }
     
     launchConfetti() {

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Ruleta - Debug</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f0f0f0;
+        }
+        .debug-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error { background: #ffe6e6; border-left: 4px solid #ff4444; }
+        .success { background: #e6ffe6; border-left: 4px solid #44ff44; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test de Debug - Ruleta</h1>
+    
+    <div class="debug-panel">
+        <h2>Estado de la Aplicación</h2>
+        <div id="debugInfo" class="debug-info">
+            Cargando información...
+        </div>
+        <button onclick="runDiagnostic()">🔄 Ejecutar Diagnóstico</button>
+        <button onclick="testPrizeDistribution()">🎯 Probar Distribución de Premios</button>
+        <button onclick="testWheelDrawing()">🎨 Probar Dibujo de Ruleta</button>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Configuración Actual</h2>
+        <div id="configInfo" class="debug-info">
+            Cargando configuración...
+        </div>
+    </div>
+
+    <div class="debug-panel">
+        <h2>Premios Distribuidos</h2>
+        <div id="prizesInfo" class="debug-info">
+            Cargando premios...
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            debugInfo.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+        }
+
+        function runDiagnostic() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.innerHTML = '';
+            
+            log('🔍 Iniciando diagnóstico...', 'info');
+            
+            // Verificar módulos
+            if (window.ConfigModule) {
+                log('✅ ConfigModule disponible', 'success');
+            } else {
+                log('❌ ConfigModule NO disponible', 'error');
+            }
+            
+            if (window.PrizesModule) {
+                log('✅ PrizesModule disponible', 'success');
+            } else {
+                log('❌ PrizesModule NO disponible', 'error');
+            }
+            
+            if (window.UtilsModule) {
+                log('✅ UtilsModule disponible', 'success');
+            } else {
+                log('❌ UtilsModule NO disponible', 'error');
+            }
+            
+            if (window.WheelModule) {
+                log('✅ WheelModule disponible', 'success');
+            } else {
+                log('❌ WheelModule NO disponible', 'error');
+            }
+            
+            // Verificar configuración
+            const wheelConfig = window.ConfigModule?.wheelConfig;
+            if (wheelConfig) {
+                log(`✅ wheelConfig disponible con ${wheelConfig.prizes?.length || 0} premios`, 'success');
+            } else {
+                log('❌ wheelConfig NO disponible', 'error');
+            }
+            
+            // Verificar instancia de ruleta
+            if (window.wheelInstance) {
+                log('✅ wheelInstance disponible', 'success');
+            } else {
+                log('❌ wheelInstance NO disponible', 'error');
+            }
+        }
+
+        function testPrizeDistribution() {
+            log('🎯 Probando distribución de premios...', 'info');
+            
+            const wheelConfig = window.ConfigModule?.wheelConfig;
+            if (!wheelConfig) {
+                log('❌ No hay configuración disponible', 'error');
+                return;
+            }
+            
+            if (!window.PrizesModule?.distributePrizesWithConsolationSpacing) {
+                log('❌ Función de distribución no disponible', 'error');
+                return;
+            }
+            
+            try {
+                const distributedPrizes = window.PrizesModule.distributePrizesWithConsolationSpacing(wheelConfig.prizes);
+                log(`✅ Distribución exitosa: ${distributedPrizes.length} premios distribuidos`, 'success');
+                
+                // Mostrar detalles
+                const prizesInfo = document.getElementById('prizesInfo');
+                prizesInfo.innerHTML = '<h3>Premios Distribuidos:</h3>';
+                distributedPrizes.forEach((prize, index) => {
+                    prizesInfo.innerHTML += `<div>${index + 1}. ${prize.text} (${prize.bgColor || 'sin color'}) ${prize.isNegative ? '[Consuelo]' : '[Real]'}</div>`;
+                });
+                
+            } catch (error) {
+                log(`❌ Error en distribución: ${error.message}`, 'error');
+            }
+        }
+
+        function testWheelDrawing() {
+            log('🎨 Probando dibujo de ruleta...', 'info');
+            
+            if (!window.wheelInstance) {
+                log('❌ Instancia de ruleta no disponible', 'error');
+                return;
+            }
+            
+            try {
+                window.wheelInstance.drawWheel();
+                log('✅ Dibujo de ruleta ejecutado', 'success');
+            } catch (error) {
+                log(`❌ Error dibujando ruleta: ${error.message}`, 'error');
+            }
+        }
+
+        function updateConfigInfo() {
+            const configInfo = document.getElementById('configInfo');
+            const wheelConfig = window.ConfigModule?.wheelConfig;
+            
+            if (wheelConfig) {
+                configInfo.innerHTML = `
+                    <h3>Configuración Actual:</h3>
+                    <div><strong>Premios:</strong> ${wheelConfig.prizes?.length || 0}</div>
+                    <div><strong>Paleta de colores:</strong> ${wheelConfig.colorPalette?.length || 0} colores</div>
+                    <div><strong>Colores:</strong> ${JSON.stringify(wheelConfig.colorPalette)}</div>
+                    <div><strong>Tema:</strong> ${JSON.stringify(wheelConfig.theme)}</div>
+                `;
+            } else {
+                configInfo.innerHTML = '<div class="error">❌ Configuración no disponible</div>';
+            }
+        }
+
+        // Ejecutar cuando se carga la página
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                runDiagnostic();
+                updateConfigInfo();
+            }, 1000);
+        });
+    </script>
+
+    <!-- Cargar los módulos de la ruleta -->
+    <script src="js/config.js"></script>
+    <script src="js/prizes.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/wheel.js"></script>
+    <script src="js/ui.js"></script>
+
+    <script>
+        // Inicializar después de cargar todos los scripts
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Cargar configuración
+                if (window.ConfigModule?.loadWheelConfig) {
+                    await window.ConfigModule.loadWheelConfig();
+                    log('✅ Configuración cargada', 'success');
+                }
+                
+                // Crear instancia de la ruleta
+                if (window.WheelModule?.PrizeWheel) {
+                    const wheelInstance = new window.WheelModule.PrizeWheel();
+                    wheelInstance.init();
+                    window.wheelInstance = wheelInstance;
+                    log('✅ Instancia de ruleta creada', 'success');
+                }
+                
+            } catch (error) {
+                log(`❌ Error inicializando: ${error.message}`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>

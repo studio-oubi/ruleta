@@ -11,7 +11,8 @@ let wheelConfig = {
     },
     consolationColors: {
         backgroundColor: '#000000',
-        textColor: '#ffffff'
+        textColor: '#ffffff',
+        hideText: false
     },
     audio: {
         volume: 0.7,
@@ -45,9 +46,9 @@ const defaultConfig = {
         { text: 'ACEITE AUTO', quantity: 1, isNegative: false, inventory: 3 },
         { text: 'ACCESORIO AUTO', quantity: 1, isNegative: false, inventory: 3 },
         { text: 'LAVADO PREMIUM', quantity: 1, isNegative: false, inventory: 3 },
-        { text: 'VUELVE A INTENTARLO', quantity: 3, isNegative: true },
-        { text: 'MEJOR SUERTE', quantity: 2, isNegative: true },
-        { text: 'INTÉNTALO OTRA VEZ', quantity: 4, isNegative: true }
+        { text: 'VUELVE A INTENTARLO', quantity: 3, isNegative: true, hideText: false },
+        { text: 'MEJOR SUERTE', quantity: 2, isNegative: true, hideText: false },
+        { text: 'INTÉNTALO OTRA VEZ', quantity: 4, isNegative: true, hideText: false }
     ],
     colorPalette: ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1', '#ff6b35', '#4ecdc4', '#45b7d1'],
     theme: {
@@ -56,7 +57,8 @@ const defaultConfig = {
     },
     consolationColors: {
         backgroundColor: '#000000',
-        textColor: '#ffffff'
+        textColor: '#ffffff',
+        hideText: false
     },
     grandPrizes: [
         {
@@ -77,8 +79,46 @@ const defaultConfig = {
         congratsText: 'Felicidades Ganaste un/a:'
     },
     logo: {
-        src: 'images/Auto Americana Logo.svg'
+        src: 'images/Auto Americana Logo.svg',
+        enabled: true
     },
+    topLogo: {
+        src: 'images/Auto Americana Logo.svg',
+        enabled: false
+    },
+    sponsors: [
+        {
+            id: 'geely',
+            src: 'images/sponsors/Geely-Logo.png',
+            name: 'Geely',
+            fromFolder: true
+        },
+        {
+            id: 'jetour',
+            src: 'images/sponsors/Jetour_logo.svg.png',
+            name: 'Jetour',
+            fromFolder: true
+        },
+        {
+            id: 'kia',
+            src: 'images/sponsors/kia.svg',
+            name: 'Kia',
+            fromFolder: true
+        },
+        {
+            id: 'banreservas',
+            src: 'images/sponsors/logo-banreservas-sin-slogan.png',
+            name: 'Banreservas',
+            fromFolder: true
+        },
+        {
+            id: 'viamar',
+            src: 'images/sponsors/viamar.png',
+            name: 'Viamar',
+            fromFolder: true
+        }
+    ],
+    sponsorsEnabled: true,
     presets: {},
     version: '2.0.0'
 };
@@ -97,6 +137,44 @@ let isSaving = false;
 // Funciones principales para manejar la configuración unificada
 async function loadWheelConfig() {
     try {
+        // Primero intentar cargar desde localStorage si existe
+        const storedFullConfig = localStorage.getItem('fullWheelConfig');
+        if (storedFullConfig) {
+            try {
+                const parsedStoredConfig = JSON.parse(storedFullConfig);
+                console.log('🔄 Configuración encontrada en localStorage, cargando...');
+                fullConfig = parsedStoredConfig;
+                
+                // Usar configuración actual o default del localStorage
+                const sourceConfig = parsedStoredConfig.current || parsedStoredConfig.default || defaultConfig;
+                
+            // Cargar configuración desde localStorage
+            wheelConfig.prizes = sourceConfig.prizes || [];
+            console.log('🔄 Config cargada desde localStorage - prizes:', wheelConfig.prizes);
+            wheelConfig.colorPalette = sourceConfig.colorPalette || ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1'];
+                wheelConfig.theme = sourceConfig.theme || defaultConfig.theme;
+                wheelConfig.consolationColors = sourceConfig.consolationColors || defaultConfig.consolationColors;
+                wheelConfig.audio = sourceConfig.audio || defaultConfig.audio;
+                wheelConfig.text = sourceConfig.text || defaultConfig.text;
+                wheelConfig.logo = sourceConfig.logo || defaultConfig.logo;
+                wheelConfig.topLogo = sourceConfig.topLogo || defaultConfig.topLogo;
+                wheelConfig.grandPrizes = sourceConfig.grandPrizes || defaultConfig.grandPrizes;
+                wheelConfig.sponsors = sourceConfig.sponsors || defaultConfig.sponsors;
+                wheelConfig.sponsorsEnabled = sourceConfig.sponsorsEnabled !== undefined ? sourceConfig.sponsorsEnabled : defaultConfig.sponsorsEnabled;
+                
+                console.log('✅ Configuración cargada desde localStorage');
+                syncGlobalVariables();
+                
+                // Verificar si hay configuración pendiente de guardar
+                checkPendingSave();
+                return;
+            } catch (error) {
+                console.warn('⚠️ Error parseando configuración del localStorage, cargando desde archivo...', error);
+            }
+        }
+        
+        // Si no hay localStorage o hay error, cargar desde archivo
+        console.log('🔄 Cargando configuración desde archivo JSON...');
         const response = await fetch('config/wheelCONF.JSON');
         if (response.ok) {
             const data = await response.json();
@@ -107,13 +185,24 @@ async function loadWheelConfig() {
             
             // Cargar configuración
             wheelConfig.prizes = sourceConfig.prizes || [];
+            console.log('🔄 Config cargada desde archivo JSON - prizes:', wheelConfig.prizes);
             wheelConfig.colorPalette = sourceConfig.colorPalette || ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1'];
             wheelConfig.theme = sourceConfig.theme || defaultConfig.theme;
             wheelConfig.consolationColors = sourceConfig.consolationColors || defaultConfig.consolationColors;
             wheelConfig.audio = sourceConfig.audio || defaultConfig.audio;
             wheelConfig.text = sourceConfig.text || defaultConfig.text;
             wheelConfig.logo = sourceConfig.logo || defaultConfig.logo;
+            wheelConfig.topLogo = sourceConfig.topLogo || defaultConfig.topLogo;
             wheelConfig.grandPrizes = sourceConfig.grandPrizes || defaultConfig.grandPrizes;
+            wheelConfig.sponsors = sourceConfig.sponsors || defaultConfig.sponsors;
+            wheelConfig.sponsorsEnabled = sourceConfig.sponsorsEnabled !== undefined ? sourceConfig.sponsorsEnabled : defaultConfig.sponsorsEnabled;
+            
+            console.log('🔧 Configuración de sponsors cargada:', {
+                sponsors: wheelConfig.sponsors?.length || 0,
+                sponsorsEnabled: wheelConfig.sponsorsEnabled,
+                sourceConfig: sourceConfig.sponsorsEnabled,
+                defaultConfig: defaultConfig.sponsorsEnabled
+            });
             
             // Asegurar que todos los premios reales tengan inventario
             wheelConfig.prizes.forEach(prize => {
@@ -140,6 +229,12 @@ async function loadWheelConfig() {
     
     // Sincronizar variables globales
     syncGlobalVariables();
+    
+    // Actualizar visualización del logo superior
+    if (window.UIModule?.updateTopLogoDisplay) {
+        console.log('🔄 Llamando updateTopLogoDisplay desde loadWheelConfig');
+        window.UIModule.updateTopLogoDisplay();
+    }
 }
 
 function syncGlobalVariables() {
@@ -160,10 +255,70 @@ function syncGlobalVariables() {
 // Función para guardar configuración
 function saveConfig() {
     try {
+        // Guardar configuración actual en localStorage
         localStorage.setItem('wheelConfig', JSON.stringify(wheelConfig));
+        
+        // Si hay fullConfig, también guardar la configuración completa
+        if (fullConfig) {
+            localStorage.setItem('fullWheelConfig', JSON.stringify(fullConfig));
+            console.log('✅ Configuración completa guardada en localStorage');
+        }
+        
         console.log('✅ Configuración guardada en localStorage');
     } catch (error) {
         console.error('❌ Error guardando configuración:', error);
+    }
+}
+
+// Función para descargar configuración actualizada
+function downloadUpdatedConfig() {
+    if (!fullConfig) {
+        console.error('❌ No hay configuración completa para descargar');
+        return false;
+    }
+
+    console.log('🔄 Preparando descarga de configuración...');
+    
+    // Crear una copia de la configuración actual para asegurar consistencia
+    const configToSave = {
+        ...fullConfig,
+        current: { ...wheelConfig },
+        default: fullConfig.default || { ...wheelConfig }
+    };
+
+    const jsonString = JSON.stringify(configToSave, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'wheelCONF.JSON';
+    a.style.display = 'none';
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    URL.revokeObjectURL(url);
+    console.log('✅ Archivo JSON descargado exitosamente');
+    return true;
+}
+
+// Función para verificar si hay configuración pendiente de guardar
+function checkPendingSave() {
+    const pendingSave = localStorage.getItem('configPendingSave');
+    if (pendingSave === 'true') {
+        console.log('⚠️ Configuración pendiente de guardar detectada');
+        
+        // Mostrar notificación al usuario
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus('⚠️ Hay cambios pendientes de guardar. Usa "Establecer como Default" y descarga el archivo JSON.', 'warning');
+        }
+        
+        // Limpiar la marca de pendiente después de mostrar la notificación
+        setTimeout(() => {
+            localStorage.removeItem('configPendingSave');
+        }, 5000);
     }
 }
 
@@ -195,5 +350,7 @@ window.ConfigModule = {
     loadWheelConfig,
     syncGlobalVariables,
     saveConfig,
-    loadConfigFromStorage
+    downloadUpdatedConfig,
+    loadConfigFromStorage,
+    checkPendingSave
 };
