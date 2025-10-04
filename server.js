@@ -4,7 +4,7 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3001;
+const PORT = 3000;
 
 // Middleware
 app.use(cors());
@@ -12,6 +12,28 @@ app.use(express.json());
 
 // Servir archivos estáticos
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/sounds', express.static(path.join(__dirname, 'sounds')));
+app.use('/config', express.static(path.join(__dirname, 'config')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// Servir archivos CSS y otros archivos estáticos del root
+app.use('/css', express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname)));
+
+// Servir la aplicación principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'ruleta.html'));
+});
+
+// Servir otros archivos HTML
+app.get('/test.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test.html'));
+});
+
+app.get('/test-prizes.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-prizes.html'));
+});
 
 // Endpoint para listar archivos de sponsors
 app.get('/api/sponsors/list', (req, res) => {
@@ -95,7 +117,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor de sponsors ejecutándose en http://localhost:${PORT}`);
-    console.log(`📁 Sirviendo archivos estáticos desde: ${path.join(__dirname, 'images')}`);
-    console.log(`🔗 Endpoint de sponsors: http://localhost:${PORT}/api/sponsors/list`);
+    console.log(`🚀 Servidor de la Ruleta ejecutándose en http://localhost:${PORT}`);
+    console.log(`🎠 Aplicación principal: http://localhost:${PORT}`);
+    console.log(`📁 Sirviendo archivos estáticos desde: ${__dirname}`);
+    console.log(`🔗 API de sponsors: http://localhost:${PORT}/api/sponsors/list`);
+    console.log(`🎯 Todo funciona en el mismo puerto: ${PORT}`);
 });

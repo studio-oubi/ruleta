@@ -27,8 +27,9 @@ npm run dev
 ```
 
 3. **Acceder a la aplicación**:
-   - Aplicación: `http://localhost:3000` (o el puerto donde sirvas la app)
-   - API de sponsors: `http://localhost:3001/api/sponsors/list`
+   - Aplicación: `http://localhost:3000`
+   - API de sponsors: `http://localhost:3000/api/sponsors/list`
+   - **Todo funciona en el mismo puerto** 🎯
 
 ## 📁 Estructura de Archivos
 
@@ -152,8 +153,8 @@ El sistema proporciona logs detallados en la consola del navegador:
 
 ### Servidor no inicia
 ```bash
-# Verificar que el puerto 3001 esté libre
-lsof -i :3001
+# Verificar que el puerto 3000 esté libre
+lsof -i :3000
 
 # Instalar dependencias si es necesario
 npm install
@@ -161,7 +162,7 @@ npm install
 
 ### No se cargan sponsors
 1. Verificar que `images/sponsors/` contiene archivos de imagen
-2. Verificar que el servidor esté ejecutándose en `http://localhost:3001`
+2. Verificar que el servidor esté ejecutándose en `http://localhost:3000`
 3. Revisar la consola del navegador para errores
 
 ### Archivos no reconocidos

@@ -1698,7 +1698,9 @@ async function loadSponsorsFromFolder() {
         let sponsorsData;
         try {
             console.log('🌐 Intentando conectar al servidor local...');
-            const response = await fetch('http://localhost:3001/api/sponsors/list');
+            // Usar el mismo puerto donde está corriendo la aplicación
+            const currentHost = window.location.origin;
+            const response = await fetch(`${currentHost}/api/sponsors/list`);
             
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
