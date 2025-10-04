@@ -1178,12 +1178,12 @@ function renderGrandPrizes() {
             <input type="number" value="${grandPrize.probability}" placeholder="%" min="0" max="100" step="0.1" onchange="updateGrandPrize(${index}, 'probability', parseFloat(this.value) || 0)" class="small-input">
             
             <div class="color-picker-container">
-                <div class="color-swatch" id="grandPrizeGradientSwatch${index}" style="${previewStyle}" onclick="toggleGoldenGradient(${index})" title="Degradado Dorado"></div>
+                <div class="color-swatch ${grandPrize.useGoldenGradient ? 'selected' : ''}" id="grandPrizeGradientSwatch${index}" style="${previewStyle}" onclick="selectGradient(${index})" title="Degradado Dorado"></div>
                 <input type="hidden" id="grandPrizeGradientInput${index}" value="${grandPrize.useGoldenGradient}">
             </div>
             
-            <div class="color-picker-container" ${grandPrize.useGoldenGradient ? 'style="display: none;"' : ''}>
-                <div class="color-swatch" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="document.getElementById('grandPrizeBgInput${index}').click()" title="Color Fondo"></div>
+            <div class="color-picker-container">
+                <div class="color-swatch ${!grandPrize.useGoldenGradient ? 'selected' : ''}" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="selectSolidColor(${index})" title="Color Sólido"></div>
                 <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value)">
             </div>
             
@@ -1227,17 +1227,13 @@ function updateGrandPrize(index, field, value) {
     }
 }
 
-// Toggle degradado dorado al hacer clic en el swatch
-function toggleGoldenGradient(index) {
+// Seleccionar degradado dorado
+function selectGradient(index) {
     const wheelConfig = window.ConfigModule?.wheelConfig;
     if (!wheelConfig || !wheelConfig.grandPrizes || !wheelConfig.grandPrizes[index]) return;
     
-    // Toggle el estado
-    const currentState = wheelConfig.grandPrizes[index].useGoldenGradient || false;
-    const newState = !currentState;
-    
-    // Actualizar el estado
-    wheelConfig.grandPrizes[index].useGoldenGradient = newState;
+    // Activar degradado dorado
+    wheelConfig.grandPrizes[index].useGoldenGradient = true;
     
     // Guardar configuración
     if (window.ConfigModule?.saveConfig) {
@@ -1252,7 +1248,31 @@ function toggleGoldenGradient(index) {
         window.wheelInstance.drawWheel();
     }
     
-    console.log(`✨ Degradado dorado ${newState ? 'activado' : 'desactivado'} para Grand Prize ${index}`);
+    console.log(`✨ Degradado dorado seleccionado para Grand Prize ${index}`);
+}
+
+// Seleccionar color sólido
+function selectSolidColor(index) {
+    const wheelConfig = window.ConfigModule?.wheelConfig;
+    if (!wheelConfig || !wheelConfig.grandPrizes || !wheelConfig.grandPrizes[index]) return;
+    
+    // Desactivar degradado dorado
+    wheelConfig.grandPrizes[index].useGoldenGradient = false;
+    
+    // Guardar configuración
+    if (window.ConfigModule?.saveConfig) {
+        window.ConfigModule.saveConfig();
+    }
+    
+    // Actualizar vista
+    renderGrandPrizes();
+    
+    // Aplicar cambios inmediatamente
+    if (window.wheelInstance) {
+        window.wheelInstance.drawWheel();
+    }
+    
+    console.log(`🎨 Color sólido seleccionado para Grand Prize ${index}`);
 }
 
 // Agregar grand prize
