@@ -1860,42 +1860,6 @@ body {
     margin-bottom: 8px;
 }
 
-.grand-prize-item .gradient-option {
-    display: flex;
-    align-items: center;
-    padding: 6px 10px;
-    background: #fef3c7;
-    border: 1px solid #f59e0b;
-    border-radius: 6px;
-    flex: 0 0 auto;
-}
-
-.grand-prize-item .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #92400e;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    user-select: none;
-    white-space: nowrap;
-}
-
-.grand-prize-item .checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #f59e0b;
-    cursor: pointer;
-}
-
-.grand-prize-item .color-label {
-    color: #6b7280;
-    font-size: 11px;
-    margin-top: 4px;
-    text-align: center;
-    font-weight: 500;
-}
 
 .remove-btn {
     background: #ef4444;
@@ -1917,11 +1881,21 @@ body {
 .grand-prize-item input[type="text"],
 .grand-prize-item input[type="number"] {
     flex: 1;
-    padding: 8px 12px;
+    padding: 6px 8px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-family: 'Poppins', sans-serif;
-    font-size: 14px;
+    font-size: 12px;
+    min-width: 0;
+}
+
+.grand-prize-item .small-input {
+    width: 80px;
+    flex: 0 0 auto;
+}
+
+.grand-prize-item input[type="number"].small-input {
+    width: 60px;
 }
 
 .grand-prize-item .color-picker-container {
@@ -1936,12 +1910,13 @@ body {
 }
 
 .grand-prize-item .color-swatch {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     border: 2px solid white;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 0 0 auto;
 }
 
 .grand-prize-item input[type="color"] {

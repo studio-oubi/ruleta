@@ -1174,26 +1174,22 @@ function renderGrandPrizes() {
             `background-color: ${grandPrize.colors.backgroundColor};`;
         
         item.innerHTML = `
-            <input type="text" value="${grandPrize.name}" placeholder="Nombre del Grand Prize" onchange="updateGrandPrize(${index}, 'name', this.value)">
-            <input type="number" value="${grandPrize.probability}" placeholder="Probabilidad (0-100)" min="0" max="100" step="0.1" onchange="updateGrandPrize(${index}, 'probability', parseFloat(this.value) || 0)">
+            <input type="text" value="${grandPrize.name}" placeholder="Nombre" onchange="updateGrandPrize(${index}, 'name', this.value)" class="small-input">
+            <input type="number" value="${grandPrize.probability}" placeholder="%" min="0" max="100" step="0.1" onchange="updateGrandPrize(${index}, 'probability', parseFloat(this.value) || 0)" class="small-input">
             
-            <div class="gradient-option">
-                <label class="checkbox-label">
-                    <input type="checkbox" ${grandPrize.useGoldenGradient ? 'checked' : ''} onchange="updateGrandPrize(${index}, 'useGoldenGradient', this.checked)">
-                    ✨ Degradado Dorado
-                </label>
+            <div class="color-picker-container">
+                <div class="color-swatch" id="grandPrizeGradientSwatch${index}" style="${previewStyle}" onclick="toggleGoldenGradient(${index})" title="Degradado Dorado"></div>
+                <input type="hidden" id="grandPrizeGradientInput${index}" value="${grandPrize.useGoldenGradient}">
             </div>
             
             <div class="color-picker-container" ${grandPrize.useGoldenGradient ? 'style="display: none;"' : ''}>
-                <div class="color-swatch" id="grandPrizeBgSwatch${index}" style="${previewStyle}" onclick="document.getElementById('grandPrizeBgInput${index}').click()"></div>
+                <div class="color-swatch" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="document.getElementById('grandPrizeBgInput${index}').click()" title="Color Fondo"></div>
                 <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value)">
-                <span class="color-label">Color Fondo</span>
             </div>
             
             <div class="color-picker-container">
-                <div class="color-swatch" id="grandPrizeTextSwatch${index}" style="background-color: ${grandPrize.colors.textColor};" onclick="document.getElementById('grandPrizeTextInput${index}').click()"></div>
+                <div class="color-swatch" id="grandPrizeTextSwatch${index}" style="background-color: ${grandPrize.colors.textColor};" onclick="document.getElementById('grandPrizeTextInput${index}').click()" title="Color Texto"></div>
                 <input type="color" id="grandPrizeTextInput${index}" value="${grandPrize.colors.textColor}" onchange="updateGrandPrize(${index}, 'textColor', this.value)">
-                <span class="color-label">Color Texto</span>
             </div>
             
             <button onclick="removeGrandPrize(${index})" class="remove-btn">×</button>
@@ -1229,6 +1225,34 @@ function updateGrandPrize(index, field, value) {
             window.wheelInstance.drawWheel();
         }
     }
+}
+
+// Toggle degradado dorado al hacer clic en el swatch
+function toggleGoldenGradient(index) {
+    const wheelConfig = window.ConfigModule?.wheelConfig;
+    if (!wheelConfig || !wheelConfig.grandPrizes || !wheelConfig.grandPrizes[index]) return;
+    
+    // Toggle el estado
+    const currentState = wheelConfig.grandPrizes[index].useGoldenGradient || false;
+    const newState = !currentState;
+    
+    // Actualizar el estado
+    wheelConfig.grandPrizes[index].useGoldenGradient = newState;
+    
+    // Guardar configuración
+    if (window.ConfigModule?.saveConfig) {
+        window.ConfigModule.saveConfig();
+    }
+    
+    // Actualizar vista
+    renderGrandPrizes();
+    
+    // Aplicar cambios inmediatamente
+    if (window.wheelInstance) {
+        window.wheelInstance.drawWheel();
+    }
+    
+    console.log(`✨ Degradado dorado ${newState ? 'activado' : 'desactivado'} para Grand Prize ${index}`);
 }
 
 // Agregar grand prize
