@@ -1183,8 +1183,8 @@ function renderGrandPrizes() {
             </div>
             
             <div class="color-picker-container">
-                <div class="color-swatch ${!grandPrize.useGoldenGradient ? 'selected' : ''}" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="selectSolidColor(${index})" title="Color Sólido"></div>
-                <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value)">
+                <div class="color-swatch ${!grandPrize.useGoldenGradient ? 'selected' : ''}" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="document.getElementById('grandPrizeBgInput${index}').click(); selectSolidColor(${index});" title="Color Sólido"></div>
+                <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value); selectSolidColor(${index});">
             </div>
             
             <div class="color-picker-container">

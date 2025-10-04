@@ -1878,7 +1878,16 @@ body {
     background: #dc2626;
 }
 
-.grand-prize-item input[type="text"],
+.grand-prize-item input[type="text"] {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    min-width: 0;
+}
+
 .grand-prize-item input[type="number"] {
     flex: 1;
     padding: 6px 8px;
@@ -1896,6 +1905,7 @@ body {
 
 .grand-prize-item input[type="number"].small-input {
     width: 45px;
+    flex: 0 0 auto;
 }
 
 .grand-prize-item .color-picker-container {
