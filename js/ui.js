@@ -782,7 +782,8 @@ function restoreDefaults() {
         },
         consolationColors: {
             backgroundColor: '#000000',
-            textColor: '#ffffff'
+            textColor: '#ffffff',
+            hideText: false
         },
         grandPrizes: [
             {
@@ -804,13 +805,37 @@ function restoreDefaults() {
             congratsText: 'Felicidades Ganaste un/a:'
         },
         logo: {
-            src: 'images/Auto Americana Logo.svg'
+            src: 'images/Auto Americana Logo.svg',
+            enabled: true
         },
+        topLogo: {
+            src: 'images/Auto Americana Logo.svg',
+            enabled: false
+        },
+        sponsors: [],
+        sponsorsEnabled: false,
         presets: wheelConfig.presets || {}, // Mantener presets existentes
         version: '2.0.0'
     });
     
+    // Guardar configuración en localStorage
+    if (window.ConfigModule?.saveConfig) {
+        window.ConfigModule.saveConfig();
+    }
+    
+    // Actualizar interfaz
     loadCurrentSettings();
+    
+    // Actualizar ruleta visualmente
+    if (window.wheelInstance) {
+        window.wheelInstance.drawWheel();
+    }
+    
+    // Actualizar sponsors carousel si está habilitado
+    if (window.UIModule?.updateSponsorsDisplay) {
+        window.UIModule.updateSponsorsDisplay();
+    }
+    
     if (window.UtilsModule?.showStatus) {
         window.UtilsModule.showStatus('Configuración restaurada a valores por defecto', 'success');
     }
