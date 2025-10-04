@@ -784,15 +784,18 @@ function restoreDefaults() {
             backgroundColor: '#000000',
             textColor: '#ffffff'
         },
-        grandPrize: {
-            enabled: false,
-            name: 'iPhone 15 Pro',
-            probability: 5,
-            colors: {
-                backgroundColor: '#ffd700',
-                textColor: '#000000'
+        grandPrizes: [
+            {
+                enabled: false,
+                name: 'iPhone 15 Pro',
+                probability: 5,
+                useGoldenGradient: false,
+                colors: {
+                    backgroundColor: '#ffd700',
+                    textColor: '#000000'
+                }
             }
-        },
+        ],
         audio: {
             volume: 0.7,
             isMuted: false
