@@ -1851,34 +1851,35 @@ body {
 
 .grand-prize-item {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 15px;
+    gap: 8px;
+    align-items: center;
+    padding: 12px;
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .grand-prize-item .gradient-option {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 6px 10px;
     background: #fef3c7;
     border: 1px solid #f59e0b;
     border-radius: 6px;
-    margin: 5px 0;
+    flex: 0 0 auto;
 }
 
 .grand-prize-item .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: #92400e;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
 }
 
 .grand-prize-item .checkbox-label input[type="checkbox"] {
