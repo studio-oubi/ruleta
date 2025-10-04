@@ -1177,23 +1177,16 @@ function renderGrandPrizes() {
             <input type="text" value="${grandPrize.name}" placeholder="Nombre" onchange="updateGrandPrize(${index}, 'name', this.value)" class="small-input">
             <input type="number" value="${grandPrize.probability}" placeholder="%" min="0" max="100" step="0.1" onchange="updateGrandPrize(${index}, 'probability', parseFloat(this.value) || 0)" class="small-input">
             
-            <div class="color-picker-container">
-                <div class="color-swatch ${grandPrize.useGoldenGradient ? 'selected' : ''}" id="grandPrizeGradientSwatch${index}" style="${previewStyle}" onclick="selectGradient(${index})" title="Degradado Dorado"></div>
-                <input type="hidden" id="grandPrizeGradientInput${index}" value="${grandPrize.useGoldenGradient}">
+            <div class="checkbox-container">
+                <label class="checkbox-label">
+                    <input type="checkbox" ${grandPrize.useGoldenGradient ? 'checked' : ''} onchange="updateGrandPrize(${index}, 'useGoldenGradient', this.checked)">
+                    ✨
+                </label>
             </div>
             
             <div class="color-picker-container">
-                <select id="grandPrizeBgSelect${index}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value); selectSolidColor(${index});" class="color-select">
-                    <option value="#ffd700" ${grandPrize.colors.backgroundColor === '#ffd700' ? 'selected' : ''}>🟡 Dorado</option>
-                    <option value="#dc143c" ${grandPrize.colors.backgroundColor === '#dc143c' ? 'selected' : ''}>🔴 Rojo</option>
-                    <option value="#4169e1" ${grandPrize.colors.backgroundColor === '#4169e1' ? 'selected' : ''}>🔵 Azul</option>
-                    <option value="#2e8b57" ${grandPrize.colors.backgroundColor === '#2e8b57' ? 'selected' : ''}>🟢 Verde</option>
-                    <option value="#ff8c00" ${grandPrize.colors.backgroundColor === '#ff8c00' ? 'selected' : ''}>🟠 Naranja</option>
-                    <option value="#8b0000" ${grandPrize.colors.backgroundColor === '#8b0000' ? 'selected' : ''}>🟤 Marrón</option>
-                    <option value="#ff6b35" ${grandPrize.colors.backgroundColor === '#ff6b35' ? 'selected' : ''}>🟣 Violeta</option>
-                    <option value="#4ecdc4" ${grandPrize.colors.backgroundColor === '#4ecdc4' ? 'selected' : ''}>🔷 Turquesa</option>
-                    <option value="#45b7d1" ${grandPrize.colors.backgroundColor === '#45b7d1' ? 'selected' : ''}>🔹 Celeste</option>
-                </select>
+                <div class="color-swatch" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="document.getElementById('grandPrizeBgInput${index}').click()" title="Color Fondo"></div>
+                <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value)">
             </div>
             
             <div class="color-picker-container">
