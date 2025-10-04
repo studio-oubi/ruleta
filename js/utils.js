@@ -267,7 +267,7 @@ function createWheelSegmentGradient(ctx, centerX, centerY, baseColor, radius) {
     
     // Crear variaciones del color base
     const lighterColor = hslToHexInit(hsl.h, hsl.s, Math.min(100, hsl.l + 15));
-    const darkerColor = hslToHexInit(hsl.h, hsl.s, Math.max(0, hsl.l - 20));
+    const darkerColor = hslToHexInit(hsl.h, hsl.s, Math.max(0, hsl.l - 35));
     
     // Crear degradado radial
     const gradient = ctx.createRadialGradient(
