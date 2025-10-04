@@ -173,11 +173,20 @@ class PrizeWheel {
                 isNegative: prize.isNegative
             });
             
-            // Crear degradado radial para el segmento (con fallback a color sólido)
+            // Crear degradado para el segmento (con fallback a color sólido)
             let fillStyle = prizeColor; // Fallback por defecto
             
             try {
-                if (window.UtilsModule?.createWheelSegmentGradient) {
+                // Verificar si es un Grand Prize con degradado dorado
+                if (prize.useGoldenGradient && window.UtilsModule?.createGoldenGradient) {
+                    const goldenGradient = window.UtilsModule.createGoldenGradient(ctx, 0, 0, this.radius);
+                    if (goldenGradient) {
+                        fillStyle = goldenGradient;
+                        console.log(`✨ Aplicando degradado dorado para Grand Prize "${prize.text}"`);
+                    } else {
+                        console.warn(`⚠️ No se pudo crear gradiente dorado para segmento ${index}, usando degradado normal`);
+                    }
+                } else if (window.UtilsModule?.createWheelSegmentGradient) {
                     const gradient = window.UtilsModule.createWheelSegmentGradient(ctx, 0, 0, prizeColor, this.radius);
                     if (gradient) {
                         fillStyle = gradient;
@@ -186,7 +195,7 @@ class PrizeWheel {
                         console.warn(`⚠️ No se pudo crear gradiente para segmento ${index}, usando color sólido`);
                     }
                 } else {
-                    console.warn('⚠️ UtilsModule.createWheelSegmentGradient no disponible, usando color sólido');
+                    console.warn('⚠️ UtilsModule no disponible, usando color sólido');
                 }
             } catch (error) {
                 console.error(`❌ Error creando gradiente para segmento ${index}:`, error);

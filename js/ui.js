@@ -1163,17 +1163,39 @@ function renderGrandPrizes() {
     wheelConfig.grandPrizes.forEach((grandPrize, index) => {
         const item = document.createElement('div');
         item.className = 'grand-prize-item';
+        
+        // Crear preview del degradado dorado
+        const goldenGradientStyle = grandPrize.useGoldenGradient ? 
+            'repeating-linear-gradient(to right, #a2682a 0%, #be8c3c 8%, #be8c3c 18%, #d3b15f 27%, #faf0a0 35%, #ffffc2 40%, #faf0a0 50%, #d3b15f 58%, #be8c3c 67%, #b17b32 77%, #bb8332 83%, #d4a245 88%, #e1b453 93%, #a4692a 100%)' : 
+            '';
+        
+        const previewStyle = grandPrize.useGoldenGradient ? 
+            `background: ${goldenGradientStyle}; background-size: 150%;` : 
+            `background-color: ${grandPrize.colors.backgroundColor};`;
+        
         item.innerHTML = `
             <input type="text" value="${grandPrize.name}" placeholder="Nombre del Grand Prize" onchange="updateGrandPrize(${index}, 'name', this.value)">
             <input type="number" value="${grandPrize.probability}" placeholder="Probabilidad (0-100)" min="0" max="100" step="0.1" onchange="updateGrandPrize(${index}, 'probability', parseFloat(this.value) || 0)">
-            <div class="color-picker-container">
-                <div class="color-swatch" id="grandPrizeBgSwatch${index}" style="background-color: ${grandPrize.colors.backgroundColor};" onclick="document.getElementById('grandPrizeBgInput${index}').click()"></div>
-                <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value)">
+            
+            <div class="gradient-option">
+                <label class="checkbox-label">
+                    <input type="checkbox" ${grandPrize.useGoldenGradient ? 'checked' : ''} onchange="updateGrandPrize(${index}, 'useGoldenGradient', this.checked)">
+                    ✨ Degradado Dorado
+                </label>
             </div>
+            
+            <div class="color-picker-container" ${grandPrize.useGoldenGradient ? 'style="display: none;"' : ''}>
+                <div class="color-swatch" id="grandPrizeBgSwatch${index}" style="${previewStyle}" onclick="document.getElementById('grandPrizeBgInput${index}').click()"></div>
+                <input type="color" id="grandPrizeBgInput${index}" value="${grandPrize.colors.backgroundColor}" onchange="updateGrandPrize(${index}, 'backgroundColor', this.value)">
+                <span class="color-label">Color Fondo</span>
+            </div>
+            
             <div class="color-picker-container">
                 <div class="color-swatch" id="grandPrizeTextSwatch${index}" style="background-color: ${grandPrize.colors.textColor};" onclick="document.getElementById('grandPrizeTextInput${index}').click()"></div>
                 <input type="color" id="grandPrizeTextInput${index}" value="${grandPrize.colors.textColor}" onchange="updateGrandPrize(${index}, 'textColor', this.value)">
+                <span class="color-label">Color Texto</span>
             </div>
+            
             <button onclick="removeGrandPrize(${index})" class="remove-btn">×</button>
         `;
         container.appendChild(item);
@@ -1192,6 +1214,16 @@ function updateGrandPrize(index, field, value) {
             wheelConfig.grandPrizes[index][field] = value;
         }
         
+        // Log especial para degradado dorado
+        if (field === 'useGoldenGradient') {
+            console.log(`✨ Degradado dorado ${value ? 'activado' : 'desactivado'} para Grand Prize ${index}`);
+        }
+        
+        // Guardar configuración
+        if (window.ConfigModule?.saveConfig) {
+            window.ConfigModule.saveConfig();
+        }
+        
         // Aplicar cambios inmediatamente
         if (window.wheelInstance) {
             window.wheelInstance.drawWheel();
@@ -1208,6 +1240,7 @@ function addGrandPrize() {
         enabled: true,
         name: 'Nuevo Grand Prize',
         probability: 5,
+        useGoldenGradient: false, // Por defecto desactivado
         colors: {
             backgroundColor: '#ffd700',
             textColor: '#000000'

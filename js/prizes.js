@@ -82,9 +82,14 @@ function distributePrizesWithConsolationSpacing(prizes) {
             const grandPrize = wheelConfig?.grandPrizes?.find(gp => gp.name === prize.text);
             if (grandPrize) {
                 prize.bgColor = grandPrize.colors.backgroundColor;
+                prize.useGoldenGradient = grandPrize.useGoldenGradient || false;
+                if (prize.useGoldenGradient) {
+                    console.log(`✨ Grand Prize "${prize.text}" usará degradado dorado`);
+                }
             } else {
                 // Fallback si no se encuentra el grand prize
                 prize.bgColor = '#ffd700';
+                prize.useGoldenGradient = false;
             }
         } else {
             // Premios regulares usan la paleta de colores

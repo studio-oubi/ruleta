@@ -283,6 +283,24 @@ function createWheelSegmentGradient(ctx, centerX, centerY, baseColor, radius) {
     return gradient;
 }
 
+// Función para crear degradado dorado especial para Grand Prizes
+function createGoldenGradient(ctx, centerX, centerY, radius) {
+    // Crear un degradado radial que simule el efecto dorado
+    const gradient = ctx.createRadialGradient(
+        centerX, centerY, 0,
+        centerX, centerY, radius
+    );
+    
+    // Colores del degradado dorado (simplificado para Canvas)
+    gradient.addColorStop(0, '#ffffc2');     // Centro muy claro (dorado claro)
+    gradient.addColorStop(0.3, '#faf0a0');   // Dorado medio
+    gradient.addColorStop(0.6, '#d3b15f');   // Dorado medio-oscuro
+    gradient.addColorStop(0.8, '#be8c3c');   // Dorado oscuro
+    gradient.addColorStop(1, '#a2682a');     // Borde muy oscuro
+    
+    return gradient;
+}
+
 // Exportar funciones para uso en otros módulos
 window.UtilsModule = {
     hexToHSLInit,
@@ -292,6 +310,7 @@ window.UtilsModule = {
     generateRaysGradient,
     hexToRgb,
     createWheelSegmentGradient,
+    createGoldenGradient,
     enterFullscreen,
     exitFullscreen,
     updateFullscreenState,
