@@ -5,7 +5,6 @@ console.log('🔄 Cargando PrizesModule...');
 
 // Función para distribuir premios con espaciado uniforme de consuelos
 function distributePrizesWithConsolationSpacing(prizes) {
-    console.log('🎯 distributePrizesWithConsolationSpacing llamada con:', prizes);
     
     if (!prizes || prizes.length === 0) {
         console.error('❌ No hay premios para distribuir');
@@ -170,9 +169,6 @@ function distributePrizesWithConsolationSpacing(prizes) {
     if (window.location.search.includes('debug=true')) {
         verifyConsolationSpacing(finalPrizes);
     }
-    
-    console.log('🎯 Premios distribuidos finales:', finalPrizes);
-    console.log('🎯 Total de premios:', finalPrizes.length);
     
     return finalPrizes;
 }

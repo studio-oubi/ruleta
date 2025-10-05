@@ -141,11 +141,7 @@ class PrizeWheel {
             return;
         }
         
-        console.log('🎯 drawWheel - wheelConfig:', wheelConfig);
-        console.log('🎯 drawWheel - prizes:', wheelConfig.prizes);
-        
         const wheelPrizes = window.PrizesModule?.distributePrizesWithConsolationSpacing(wheelConfig.prizes) || [];
-        console.log('🎯 drawWheel - wheelPrizes resultantes:', wheelPrizes);
         
         // Verificar que hay premios para dibujar
         if (!wheelPrizes || wheelPrizes.length === 0) {
