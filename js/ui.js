@@ -816,6 +816,69 @@ async function loadPreset() {
     }
 }
 
+// Actualizar preset existente en el servidor
+async function updatePreset() {
+    const select = document.getElementById('presetSelect');
+    const selectedName = select.value;
+    if (!selectedName) {
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus('Por favor selecciona un preset para actualizar', 'error');
+        }
+        return;
+    }
+    
+    if (!confirm(`¿Estás seguro de que quieres actualizar el preset "${selectedName}" con la configuración actual?`)) {
+        return;
+    }
+    
+    const wheelConfig = window.ConfigModule?.wheelConfig;
+    if (!wheelConfig) {
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus('Error: Configuración no disponible', 'error');
+        }
+        return;
+    }
+    
+    try {
+        const currentHost = window.location.origin;
+        const response = await fetch(`${currentHost}/api/presets/update/${encodeURIComponent(selectedName)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                config: wheelConfig
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            await loadPresetList(); // Recargar lista desde servidor
+            
+            if (window.UtilsModule?.showStatus) {
+                window.UtilsModule.showStatus(result.message, 'success');
+            }
+            
+            console.log(`✅ Preset "${selectedName}" actualizado en servidor`);
+        } else {
+            throw new Error(result.message || 'Error desconocido al actualizar preset');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error actualizando preset:', error);
+        
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus(`Error actualizando preset: ${error.message}`, 'error');
+        }
+    }
+}
+
 // Eliminar preset del servidor
 async function deletePreset() {
     const select = document.getElementById('presetSelect');
@@ -2260,6 +2323,7 @@ window.UIModule = {
     loadPresetList,
     savePreset,
     loadPreset,
+    updatePreset,
     deletePreset,
     restoreDefaults,
     setAsDefault,

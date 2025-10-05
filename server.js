@@ -212,6 +212,75 @@ app.post('/api/presets/save', (req, res) => {
     }
 });
 
+// Actualizar preset existente
+app.put('/api/presets/update/:name', (req, res) => {
+    try {
+        const { name } = req.params;
+        const { config } = req.body;
+        
+        if (!config) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Configuración es requerida' 
+            });
+        }
+        
+        // Validar nombre del archivo
+        const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        if (safeName !== name) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Nombre de preset inválido' 
+            });
+        }
+        
+        const filePath = path.join(presetsDir, `${safeName}.json`);
+        
+        // Verificar que el preset existe
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Preset no encontrado para actualizar' 
+            });
+        }
+        
+        // Leer el preset existente para mantener metadata
+        let existingPreset = {};
+        try {
+            const existingData = fs.readFileSync(filePath, 'utf8');
+            existingPreset = JSON.parse(existingData);
+        } catch (error) {
+            console.warn('No se pudo leer metadata del preset existente:', error.message);
+        }
+        
+        // Crear preset actualizado manteniendo metadata original
+        const updatedPresetData = {
+            name: safeName,
+            config: config,
+            created: existingPreset.created || new Date().toISOString(),
+            modified: new Date().toISOString(),
+            version: existingPreset.version || '1.0.0'
+        };
+        
+        fs.writeFileSync(filePath, JSON.stringify(updatedPresetData, null, 2));
+        
+        console.log(`🔄 Preset actualizado: ${safeName}.json`);
+        
+        res.json({ 
+            success: true, 
+            message: `Preset "${safeName}" actualizado exitosamente`,
+            filename: `${safeName}.json`
+        });
+    } catch (error) {
+        console.error('Error al actualizar preset:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error al actualizar preset', 
+            error: error.message 
+        });
+    }
+});
+
 // Cargar preset
 app.get('/api/presets/load/:name', (req, res) => {
     try {
