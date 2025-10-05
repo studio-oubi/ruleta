@@ -339,7 +339,6 @@ function loadCurrentSettings() {
     
     // Aplicar logo superior después de cargar configuración
     if (window.UIModule?.updateTopLogoDisplay) {
-        console.log('🔄 Aplicando logo superior desde loadCurrentSettings...');
         window.UIModule.updateTopLogoDisplay();
     }
 
@@ -2188,12 +2187,10 @@ function applySponsorFilters() {
     
     // Aplicar filtro a todos los logos del carrusel
     const sponsorLogos = document.querySelectorAll('.sponsor-logo');
-    console.log(`🎨 Aplicando filtros a ${sponsorLogos.length} logos:`, filterString.trim() || 'none');
     
-    sponsorLogos.forEach((logo, index) => {
+    sponsorLogos.forEach((logo) => {
         const currentFilter = filterString.trim() || 'none';
         logo.style.filter = currentFilter;
-        console.log(`Logo ${index + 1}:`, currentFilter);
     });
     
     // Guardar configuración de filtros

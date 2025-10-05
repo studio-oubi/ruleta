@@ -155,7 +155,6 @@ class PrizeWheel {
         
         // Dibujar segmentos
         const segmentAngle = (Math.PI * 2) / wheelPrizes.length;
-        console.log('🎯 Dibujando', wheelPrizes.length, 'segmentos con ángulo:', segmentAngle);
         
         // Dibujar todos los segmentos primero
         wheelPrizes.forEach((prize, index) => {
@@ -178,25 +177,17 @@ class PrizeWheel {
             
             try {
                 // Verificar si es un Grand Prize con degradado dorado
-                if (prize.useGoldenGradient && window.UtilsModule?.createGoldenGradient) {
-                    const goldenGradient = window.UtilsModule.createGoldenGradient(ctx, 0, 0, this.radius);
-                    if (goldenGradient) {
-                        fillStyle = goldenGradient;
-                        console.log(`✨ Aplicando degradado dorado para Grand Prize "${prize.text}"`);
-                    } else {
-                        console.warn(`⚠️ No se pudo crear gradiente dorado para segmento ${index}, usando degradado normal`);
+                    if (prize.useGoldenGradient && window.UtilsModule?.createGoldenGradient) {
+                        const goldenGradient = window.UtilsModule.createGoldenGradient(ctx, 0, 0, this.radius);
+                        if (goldenGradient) {
+                            fillStyle = goldenGradient;
+                        }
+                    } else if (window.UtilsModule?.createWheelSegmentGradient) {
+                        const gradient = window.UtilsModule.createWheelSegmentGradient(ctx, 0, 0, prizeColor, this.radius);
+                        if (gradient) {
+                            fillStyle = gradient;
+                        }
                     }
-                } else if (window.UtilsModule?.createWheelSegmentGradient) {
-                    const gradient = window.UtilsModule.createWheelSegmentGradient(ctx, 0, 0, prizeColor, this.radius);
-                    if (gradient) {
-                        fillStyle = gradient;
-                        console.log(`✨ Aplicando degradado para segmento ${index}:`, prizeColor);
-                    } else {
-                        console.warn(`⚠️ No se pudo crear gradiente para segmento ${index}, usando color sólido`);
-                    }
-                } else {
-                    console.warn('⚠️ UtilsModule no disponible, usando color sólido');
-                }
             } catch (error) {
                 console.error(`❌ Error creando gradiente para segmento ${index}:`, error);
                 fillStyle = prizeColor; // Fallback en caso de error
@@ -211,8 +202,6 @@ class PrizeWheel {
             // Aplicar color o degradado
             ctx.fillStyle = fillStyle;
             ctx.fill();
-            
-            console.log(`🎯 Segmento ${index} dibujado con color:`, prizeColor);
         });
         
         // Restaurar opacidad completa

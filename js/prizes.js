@@ -83,9 +83,7 @@ function distributePrizesWithConsolationSpacing(prizes) {
             if (grandPrize) {
                 prize.bgColor = grandPrize.colors.backgroundColor;
                 prize.useGoldenGradient = grandPrize.useGoldenGradient || false;
-                if (prize.useGoldenGradient) {
-                    console.log(`✨ Grand Prize "${prize.text}" usará degradado dorado`);
-                }
+                // Grand Prize configurado con degradado dorado si aplica
             } else {
                 // Fallback si no se encuentra el grand prize
                 prize.bgColor = '#ffd700';
