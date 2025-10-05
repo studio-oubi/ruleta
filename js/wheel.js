@@ -164,14 +164,6 @@ class PrizeWheel {
             // Usar color del premio directamente
             const prizeColor = prize.bgColor || '#dc143c';
             
-            console.log(`🎯 Segmento ${index}:`, {
-                text: prize.text,
-                color: prizeColor,
-                startAngle: startAngle,
-                endAngle: endAngle,
-                isNegative: prize.isNegative
-            });
-            
             // Crear degradado para el segmento (con fallback a color sólido)
             let fillStyle = prizeColor; // Fallback por defecto
             
