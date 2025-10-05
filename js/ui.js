@@ -840,6 +840,18 @@ function restoreDefaults() {
         window.ConfigModule.saveConfig();
     }
     
+    // Forzar guardado de configuración completa para asegurar que se guarde como current
+    try {
+        const fullConfigToSave = {
+            current: { ...defaultConfigRestored },
+            default: { ...defaultConfigRestored }
+        };
+        localStorage.setItem('fullWheelConfig', JSON.stringify(fullConfigToSave));
+        console.log('✅ Configuración completa forzada a localStorage:', fullConfigToSave);
+    } catch (error) {
+        console.error('❌ Error forzando guardado:', error);
+    }
+    
     // Actualizar interfaz
     loadCurrentSettings();
     
@@ -861,6 +873,47 @@ function restoreDefaults() {
     
     if (window.UtilsModule?.showStatus) {
         window.UtilsModule.showStatus('Configuración restaurada a valores por defecto', 'success');
+    }
+}
+
+// Limpiar cache del sitio
+function clearSiteCache() {
+    if (!confirm('¿Estás seguro de que quieres limpiar toda la cache del sitio?\n\nEsto eliminará:\n- Configuración guardada\n- Presets personalizados\n- Sponsors cargados\n\nLa aplicación volverá a cargar desde el archivo JSON original.')) {
+        return;
+    }
+    
+    try {
+        // Limpiar localStorage
+        localStorage.removeItem('wheelConfig');
+        localStorage.removeItem('fullWheelConfig');
+        
+        // Limpiar sessionStorage si existe
+        sessionStorage.clear();
+        
+        // Limpiar configuración en memoria
+        if (window.ConfigModule) {
+            window.ConfigModule.wheelConfig = null;
+            window.ConfigModule.fullConfig = null;
+        }
+        
+        console.log('✅ Cache del sitio limpiada completamente');
+        
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus('Cache limpiada. Recarga la página para ver los cambios.', 'success');
+        }
+        
+        // Opcional: Recargar la página automáticamente
+        setTimeout(() => {
+            if (confirm('¿Quieres recargar la página ahora para aplicar los cambios?')) {
+                window.location.reload();
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('❌ Error limpiando cache:', error);
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus('Error limpiando cache: ' + error.message, 'error');
+        }
     }
 }
 
