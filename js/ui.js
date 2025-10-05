@@ -785,16 +785,37 @@ async function loadPreset() {
             // Cargar la configuración del preset
             Object.assign(wheelConfig, result.preset.config);
             
+            // Actualizar fullConfig para que persista después del refresh
+            if (window.ConfigModule) {
+                // Obtener o crear fullConfig
+                if (!window.ConfigModule.fullConfig) {
+                    window.ConfigModule.fullConfig = {};
+                }
+                
+                // Actualizar current con la configuración del preset
+                window.ConfigModule.fullConfig.current = { ...result.preset.config };
+                
+                // Mantener default si existe, sino usar current
+                if (!window.ConfigModule.fullConfig.default) {
+                    window.ConfigModule.fullConfig.default = { ...result.preset.config };
+                }
+            }
+            
             // Guardar la configuración cargada en localStorage para persistencia
             if (window.ConfigModule?.saveConfig) {
                 window.ConfigModule.saveConfig();
             }
             
-            // Actualizar fullConfig para que persista después del refresh
-            if (window.ConfigModule?.fullConfig) {
-                window.ConfigModule.fullConfig.current = { ...result.preset.config };
-                // Mantener la estructura completa
-                localStorage.setItem('fullWheelConfig', JSON.stringify(window.ConfigModule.fullConfig));
+            // Forzar guardado de configuración completa para asegurar persistencia
+            try {
+                const fullConfigToSave = {
+                    current: { ...result.preset.config },
+                    default: window.ConfigModule?.fullConfig?.default || { ...result.preset.config }
+                };
+                localStorage.setItem('fullWheelConfig', JSON.stringify(fullConfigToSave));
+                console.log('✅ Configuración de preset forzada a localStorage:', fullConfigToSave);
+            } catch (error) {
+                console.error('❌ Error forzando guardado de preset:', error);
             }
             
             // Actualizar la interfaz
