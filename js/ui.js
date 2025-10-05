@@ -785,6 +785,18 @@ async function loadPreset() {
             // Cargar la configuración del preset
             Object.assign(wheelConfig, result.preset.config);
             
+            // Guardar la configuración cargada en localStorage para persistencia
+            if (window.ConfigModule?.saveConfig) {
+                window.ConfigModule.saveConfig();
+            }
+            
+            // Actualizar fullConfig para que persista después del refresh
+            if (window.ConfigModule?.fullConfig) {
+                window.ConfigModule.fullConfig.current = { ...result.preset.config };
+                // Mantener la estructura completa
+                localStorage.setItem('fullWheelConfig', JSON.stringify(window.ConfigModule.fullConfig));
+            }
+            
             // Actualizar la interfaz
             loadCurrentSettings();
             
