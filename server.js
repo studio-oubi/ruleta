@@ -116,10 +116,170 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// ===== ENDPOINTS PARA PRESETS =====
+
+// Crear carpeta de presets si no existe
+const presetsDir = path.join(__dirname, 'presets');
+if (!fs.existsSync(presetsDir)) {
+    fs.mkdirSync(presetsDir, { recursive: true });
+    console.log('📁 Carpeta de presets creada:', presetsDir);
+}
+
+// Listar presets disponibles
+app.get('/api/presets/list', (req, res) => {
+    try {
+        const files = fs.readdirSync(presetsDir);
+        const presetFiles = files.filter(file => file.endsWith('.json'));
+        
+        const presets = presetFiles.map(file => {
+            const filePath = path.join(presetsDir, file);
+            const stats = fs.statSync(filePath);
+            const name = file.replace('.json', '');
+            
+            return {
+                id: name,
+                name: name,
+                filename: file,
+                path: `presets/${file}`,
+                created: stats.birthtime,
+                modified: stats.mtime,
+                size: stats.size
+            };
+        });
+        
+        res.json({ 
+            success: true, 
+            count: presets.length, 
+            presets: presets.sort((a, b) => b.modified - a.modified) // Más recientes primero
+        });
+    } catch (error) {
+        console.error('Error al listar presets:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error al listar presets', 
+            error: error.message 
+        });
+    }
+});
+
+// Guardar preset
+app.post('/api/presets/save', (req, res) => {
+    try {
+        const { name, config } = req.body;
+        
+        if (!name || !config) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Nombre y configuración son requeridos' 
+            });
+        }
+        
+        // Validar nombre del archivo
+        const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        if (safeName !== name) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'El nombre solo puede contener letras, números, guiones y guiones bajos' 
+            });
+        }
+        
+        const filePath = path.join(presetsDir, `${safeName}.json`);
+        
+        // Agregar metadata al preset
+        const presetData = {
+            name: safeName,
+            config: config,
+            created: new Date().toISOString(),
+            version: '1.0.0'
+        };
+        
+        fs.writeFileSync(filePath, JSON.stringify(presetData, null, 2));
+        
+        console.log(`✅ Preset guardado: ${safeName}.json`);
+        
+        res.json({ 
+            success: true, 
+            message: `Preset "${safeName}" guardado exitosamente`,
+            filename: `${safeName}.json`
+        });
+    } catch (error) {
+        console.error('Error al guardar preset:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error al guardar preset', 
+            error: error.message 
+        });
+    }
+});
+
+// Cargar preset
+app.get('/api/presets/load/:name', (req, res) => {
+    try {
+        const { name } = req.params;
+        const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filePath = path.join(presetsDir, `${safeName}.json`);
+        
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Preset no encontrado' 
+            });
+        }
+        
+        const presetData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        
+        res.json({ 
+            success: true, 
+            preset: presetData
+        });
+    } catch (error) {
+        console.error('Error al cargar preset:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error al cargar preset', 
+            error: error.message 
+        });
+    }
+});
+
+// Eliminar preset
+app.delete('/api/presets/delete/:name', (req, res) => {
+    try {
+        const { name } = req.params;
+        const safeName = name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filePath = path.join(presetsDir, `${safeName}.json`);
+        
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Preset no encontrado' 
+            });
+        }
+        
+        fs.unlinkSync(filePath);
+        
+        console.log(`🗑️ Preset eliminado: ${safeName}.json`);
+        
+        res.json({ 
+            success: true, 
+            message: `Preset "${safeName}" eliminado exitosamente`
+        });
+    } catch (error) {
+        console.error('Error al eliminar preset:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error al eliminar preset', 
+            error: error.message 
+        });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor de la Ruleta ejecutándose en http://localhost:${PORT}`);
     console.log(`🎠 Aplicación principal: http://localhost:${PORT}`);
     console.log(`📁 Sirviendo archivos estáticos desde: ${__dirname}`);
     console.log(`🔗 API de sponsors: http://localhost:${PORT}/api/sponsors/list`);
+    console.log(`💾 API de presets: http://localhost:${PORT}/api/presets/list`);
+    console.log(`📁 Carpeta de presets: ${presetsDir}`);
     console.log(`🎯 Todo funciona en el mismo puerto: ${PORT}`);
 });

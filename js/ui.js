@@ -653,26 +653,55 @@ function removePrize(index) {
     }
 }
 
-// Cargar lista de presets
-function loadPresetList() {
+// Cargar lista de presets desde el servidor
+async function loadPresetList() {
     const select = document.getElementById('presetSelect');
     if (!select) return;
     
-    select.innerHTML = '<option value="">Seleccionar preset...</option>';
+    select.innerHTML = '<option value="">Cargando presets...</option>';
     
-    const wheelConfig = window.ConfigModule?.wheelConfig;
-    if (!wheelConfig) return;
-    
-    Object.keys(wheelConfig.presets || {}).forEach(name => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        select.appendChild(option);
-    });
+    try {
+        const currentHost = window.location.origin;
+        const response = await fetch(`${currentHost}/api/presets/list`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        select.innerHTML = '<option value="">Seleccionar preset...</option>';
+        
+        if (result.success && result.presets && result.presets.length > 0) {
+            result.presets.forEach(preset => {
+                const option = document.createElement('option');
+                option.value = preset.name;
+                option.textContent = preset.name;
+                option.title = `Creado: ${new Date(preset.created).toLocaleDateString()}`;
+                select.appendChild(option);
+            });
+            
+            console.log(`✅ ${result.count} presets cargados desde el servidor`);
+        } else {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "No hay presets disponibles";
+            option.disabled = true;
+            select.appendChild(option);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error cargando presets:', error);
+        select.innerHTML = '<option value="">Error cargando presets</option>';
+        
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus('Error cargando presets del servidor', 'error');
+        }
+    }
 }
 
-// Guardar preset
-function savePreset() {
+// Guardar preset en el servidor
+async function savePreset() {
     const wheelConfig = window.ConfigModule?.wheelConfig;
     if (!wheelConfig) return;
     
@@ -684,23 +713,50 @@ function savePreset() {
         return;
     }
     
-    if (!wheelConfig.presets) {
-        wheelConfig.presets = {};
-    }
-    
-    wheelConfig.presets[name] = JSON.parse(JSON.stringify(wheelConfig));
-    loadPresetList();
-    document.getElementById('presetName').value = '';
-    if (window.UtilsModule?.showStatus) {
-        window.UtilsModule.showStatus(`Preset "${name}" guardado exitosamente`, 'success');
+    try {
+        const currentHost = window.location.origin;
+        const response = await fetch(`${currentHost}/api/presets/save`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: name,
+                config: wheelConfig
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('presetName').value = '';
+            await loadPresetList(); // Recargar lista desde servidor
+            
+            if (window.UtilsModule?.showStatus) {
+                window.UtilsModule.showStatus(result.message, 'success');
+            }
+            
+            console.log(`✅ Preset "${name}" guardado en servidor:`, result.filename);
+        } else {
+            throw new Error(result.message || 'Error desconocido al guardar preset');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error guardando preset:', error);
+        
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus(`Error guardando preset: ${error.message}`, 'error');
+        }
     }
 }
 
-// Cargar preset
-function loadPreset() {
-    const wheelConfig = window.ConfigModule?.wheelConfig;
-    if (!wheelConfig) return;
-    
+// Cargar preset desde el servidor
+async function loadPreset() {
     const select = document.getElementById('presetSelect');
     const selectedName = select.value;
     if (!selectedName) {
@@ -710,26 +766,59 @@ function loadPreset() {
         return;
     }
     
-    const preset = wheelConfig.presets[selectedName];
-    if (!preset) {
-        if (window.UtilsModule?.showStatus) {
-            window.UtilsModule.showStatus('Preset no encontrado', 'error');
+    try {
+        const currentHost = window.location.origin;
+        const response = await fetch(`${currentHost}/api/presets/load/${encodeURIComponent(selectedName)}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
         }
-        return;
-    }
-    
-    Object.assign(wheelConfig, preset);
-    loadCurrentSettings();
-    if (window.UtilsModule?.showStatus) {
-        window.UtilsModule.showStatus(`Preset "${selectedName}" cargado exitosamente`, 'success');
+        
+        const result = await response.json();
+        
+        if (result.success && result.preset) {
+            const wheelConfig = window.ConfigModule?.wheelConfig;
+            if (!wheelConfig) {
+                throw new Error('ConfigModule no disponible');
+            }
+            
+            // Cargar la configuración del preset
+            Object.assign(wheelConfig, result.preset.config);
+            
+            // Actualizar la interfaz
+            loadCurrentSettings();
+            
+            // Actualizar la ruleta visualmente
+            if (window.wheelInstance) {
+                window.wheelInstance.drawWheel();
+            }
+            
+            // Actualizar sponsors si están habilitados
+            if (window.UIModule?.updateSponsorsDisplay) {
+                window.UIModule.updateSponsorsDisplay();
+            }
+            
+            if (window.UtilsModule?.showStatus) {
+                window.UtilsModule.showStatus(`Preset "${selectedName}" cargado exitosamente`, 'success');
+            }
+            
+            console.log(`✅ Preset "${selectedName}" cargado desde servidor`);
+        } else {
+            throw new Error('Preset no encontrado o formato inválido');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error cargando preset:', error);
+        
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus(`Error cargando preset: ${error.message}`, 'error');
+        }
     }
 }
 
-// Eliminar preset
-function deletePreset() {
-    const wheelConfig = window.ConfigModule?.wheelConfig;
-    if (!wheelConfig) return;
-    
+// Eliminar preset del servidor
+async function deletePreset() {
     const select = document.getElementById('presetSelect');
     const selectedName = select.value;
     if (!selectedName) {
@@ -743,10 +832,37 @@ function deletePreset() {
         return;
     }
     
-    delete wheelConfig.presets[selectedName];
-    loadPresetList();
-    if (window.UtilsModule?.showStatus) {
-        window.UtilsModule.showStatus(`Preset "${selectedName}" eliminado exitosamente`, 'success');
+    try {
+        const currentHost = window.location.origin;
+        const response = await fetch(`${currentHost}/api/presets/delete/${encodeURIComponent(selectedName)}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            await loadPresetList(); // Recargar lista desde servidor
+            
+            if (window.UtilsModule?.showStatus) {
+                window.UtilsModule.showStatus(result.message, 'success');
+            }
+            
+            console.log(`✅ Preset "${selectedName}" eliminado del servidor`);
+        } else {
+            throw new Error(result.message || 'Error desconocido al eliminar preset');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error eliminando preset:', error);
+        
+        if (window.UtilsModule?.showStatus) {
+            window.UtilsModule.showStatus(`Error eliminando preset: ${error.message}`, 'error');
+        }
     }
 }
 
