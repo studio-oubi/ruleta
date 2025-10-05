@@ -759,8 +759,8 @@ function restoreDefaults() {
     const wheelConfig = window.ConfigModule?.wheelConfig;
     if (!wheelConfig) return;
     
-    // Restaurar configuración por defecto
-    Object.assign(wheelConfig, {
+    // Configuración por defecto completa
+    const defaultConfigRestored = {
         prizes: [
             { text: 'TANQUE LLENO', quantity: 1, isNegative: false, inventory: 3 },
             { text: 'NEVERA', quantity: 1, isNegative: false, inventory: 3 },
@@ -816,7 +816,23 @@ function restoreDefaults() {
         sponsorsEnabled: false,
         presets: wheelConfig.presets || {}, // Mantener presets existentes
         version: '2.0.0'
-    });
+    };
+
+    // Restaurar configuración actual
+    Object.assign(wheelConfig, defaultConfigRestored);
+    
+    // Actualizar fullConfig para que persista después del refresh
+    if (window.ConfigModule) {
+        // Obtener o crear fullConfig
+        const fullConfig = window.ConfigModule.fullConfig || {};
+        
+        // Actualizar tanto current como default
+        fullConfig.current = { ...defaultConfigRestored };
+        fullConfig.default = { ...defaultConfigRestored };
+        
+        // Guardar en el módulo de configuración
+        window.ConfigModule.fullConfig = fullConfig;
+    }
     
     // Guardar configuración en localStorage
     if (window.ConfigModule?.saveConfig) {
