@@ -1217,17 +1217,7 @@ body {
     margin-bottom: 24px;
 }
 
-.preset-save {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.preset-select {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
+/* Estilos para presets - ya están definidos más abajo */
 
 /* Reset Controls */
 .danger-section {
@@ -1727,8 +1717,19 @@ body {
     margin-top: 8px;
 }
 
-.preset-save input, .preset-load select {
+.preset-save input {
     flex: 1;
+    min-width: 200px;
+}
+
+.preset-load select {
+    flex: 1;
+    min-width: 200px;
+}
+
+.preset-save button, .preset-load button {
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 /* Reset Actions */
