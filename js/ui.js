@@ -824,14 +824,15 @@ function restoreDefaults() {
     // Actualizar fullConfig para que persista después del refresh
     if (window.ConfigModule) {
         // Obtener o crear fullConfig
-        const fullConfig = window.ConfigModule.fullConfig || {};
+        if (!window.ConfigModule.fullConfig) {
+            window.ConfigModule.fullConfig = {};
+        }
         
         // Actualizar tanto current como default
-        fullConfig.current = { ...defaultConfigRestored };
-        fullConfig.default = { ...defaultConfigRestored };
+        window.ConfigModule.fullConfig.current = { ...defaultConfigRestored };
+        window.ConfigModule.fullConfig.default = { ...defaultConfigRestored };
         
-        // Guardar en el módulo de configuración
-        window.ConfigModule.fullConfig = fullConfig;
+        console.log('✅ fullConfig actualizado:', window.ConfigModule.fullConfig);
     }
     
     // Guardar configuración en localStorage
@@ -850,6 +851,12 @@ function restoreDefaults() {
     // Actualizar sponsors carousel si está habilitado
     if (window.UIModule?.updateSponsorsDisplay) {
         window.UIModule.updateSponsorsDisplay();
+    }
+    
+    // Actualizar top logo después de restaurar configuración
+    if (window.UIModule?.updateTopLogoDisplay) {
+        console.log('🔄 Actualizando top logo después de restoreDefaults...');
+        window.UIModule.updateTopLogoDisplay();
     }
     
     if (window.UtilsModule?.showStatus) {
