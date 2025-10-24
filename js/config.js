@@ -80,7 +80,8 @@ const defaultConfig = {
     },
     logo: {
         src: 'images/Auto Americana Logo.svg',
-        enabled: true
+        enabled: true,
+        width: 45
     },
     topLogo: {
         src: 'images/Auto Americana Logo.svg',

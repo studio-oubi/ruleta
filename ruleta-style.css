@@ -204,6 +204,7 @@ body {
     height: auto;
     object-fit: contain;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: width 0.3s ease;
 }
 
 /* Aguja indicadora a la derecha - Material Icon */
@@ -2206,6 +2207,58 @@ body {
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Control de rango para el ancho del logo */
+.range-control {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.range-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #d6005d;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+    background: #b8004f;
+    transform: scale(1.1);
+}
+
+.range-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #d6005d;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#logoWidthValue {
+    font-weight: 600;
+    color: #d6005d;
+    min-width: 50px;
+    text-align: right;
 }
 
 .filter-option span {

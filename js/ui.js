@@ -25,6 +25,9 @@ function initSettings() {
     
     // Configurar event listeners del modal
     setupConfigEventListeners();
+    
+    // Inicializar control del ancho del logo
+    initLogoWidthControl();
 }
 
 // Cerrar modal de configuración
@@ -1616,6 +1619,10 @@ function applyVisualChanges() {
     const logo = document.querySelector('.center-logo');
     if (logo) {
         logo.src = wheelConfig.logo.src;
+        // Aplicar ancho del logo si está configurado
+        if (wheelConfig.logo.width) {
+            logo.style.width = `${wheelConfig.logo.width}%`;
+        }
     }
     
     // Actualizar favicon dinámicamente
@@ -2521,6 +2528,43 @@ function updateSponsorsCount() {
     }
 }
 
+// Función para inicializar el control del ancho del logo
+function initLogoWidthControl() {
+    const logoWidthSlider = document.getElementById('logoWidthSlider');
+    const logoWidthValue = document.getElementById('logoWidthValue');
+    const centerLogo = document.querySelector('.center-logo');
+    
+    if (logoWidthSlider && logoWidthValue && centerLogo) {
+        // Cargar valor actual de la configuración
+        const wheelConfig = window.ConfigModule?.wheelConfig;
+        if (wheelConfig?.logo?.width) {
+            logoWidthSlider.value = wheelConfig.logo.width;
+            logoWidthValue.textContent = `${wheelConfig.logo.width}%`;
+            centerLogo.style.width = `${wheelConfig.logo.width}%`;
+        }
+        
+        // Event listener para cambios en el slider
+        logoWidthSlider.addEventListener('input', function() {
+            const width = this.value;
+            logoWidthValue.textContent = `${width}%`;
+            centerLogo.style.width = `${width}%`;
+            
+            // Actualizar configuración
+            if (window.ConfigModule?.wheelConfig) {
+                if (!window.ConfigModule.wheelConfig.logo) {
+                    window.ConfigModule.wheelConfig.logo = {};
+                }
+                window.ConfigModule.wheelConfig.logo.width = parseInt(width);
+                
+                // Guardar configuración
+                if (window.ConfigModule?.saveConfig) {
+                    window.ConfigModule.saveConfig();
+                }
+            }
+        });
+    }
+}
+
 // Exportar funciones para uso en otros módulos
 window.UIModule = {
     initSettings,
@@ -2559,6 +2603,7 @@ window.UIModule = {
     renderTopLogoConfig,
     updateTopLogoDisplay,
     resetTopLogo,
+    initLogoWidthControl,
     initSponsorsCarousel,
     renderSponsorsCarousel,
     addSponsorLogo,
