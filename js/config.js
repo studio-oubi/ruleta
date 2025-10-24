@@ -148,21 +148,45 @@ async function loadWheelConfig() {
                 // Usar configuración actual o default del localStorage
                 const sourceConfig = parsedStoredConfig.current || parsedStoredConfig.default || defaultConfig;
                 
-            // Cargar configuración desde localStorage
-            wheelConfig.prizes = sourceConfig.prizes || [];
-            console.log('🔄 Config cargada desde localStorage - prizes:', wheelConfig.prizes);
-            wheelConfig.colorPalette = sourceConfig.colorPalette || ['#dc143c', '#ffd700', '#8b0000', '#2e8b57', '#ff8c00', '#4169e1'];
-                wheelConfig.theme = sourceConfig.theme || defaultConfig.theme;
-                wheelConfig.consolationColors = sourceConfig.consolationColors || defaultConfig.consolationColors;
-                wheelConfig.audio = sourceConfig.audio || defaultConfig.audio;
-                wheelConfig.text = sourceConfig.text || defaultConfig.text;
-                wheelConfig.logo = sourceConfig.logo || defaultConfig.logo;
-                wheelConfig.topLogo = sourceConfig.topLogo || defaultConfig.topLogo;
-                wheelConfig.grandPrizes = sourceConfig.grandPrizes || defaultConfig.grandPrizes;
-                wheelConfig.sponsors = sourceConfig.sponsors || defaultConfig.sponsors;
-                wheelConfig.sponsorsEnabled = sourceConfig.sponsorsEnabled !== undefined ? sourceConfig.sponsorsEnabled : defaultConfig.sponsorsEnabled;
+                // Cargar configuración completa desde localStorage
+                console.log('🔄 Aplicando configuración completa desde localStorage...');
                 
-                console.log('✅ Configuración cargada desde localStorage');
+                // Limpiar wheelConfig y aplicar la nueva configuración
+                Object.keys(wheelConfig).forEach(key => delete wheelConfig[key]);
+                Object.assign(wheelConfig, sourceConfig);
+                
+                console.log('🔄 Configuración aplicada completamente:', {
+                    prizesCount: wheelConfig.prizes?.length || 0,
+                    theme: wheelConfig.theme,
+                    logo: wheelConfig.logo,
+                    topLogo: wheelConfig.topLogo,
+                    sponsorsEnabled: wheelConfig.sponsorsEnabled
+                });
+                
+                // Asegurar que todos los premios reales tengan inventario
+                if (wheelConfig.prizes) {
+                    wheelConfig.prizes.forEach(prize => {
+                        if (!prize.isNegative && prize.inventory === undefined) {
+                            prize.inventory = 3;
+                        }
+                    });
+                }
+                
+                console.log('✅ Configuración completa cargada desde localStorage:', {
+                    prizes: wheelConfig.prizes?.length || 0,
+                    theme: wheelConfig.theme,
+                    logo: wheelConfig.logo,
+                    topLogo: wheelConfig.topLogo,
+                    sponsorsEnabled: wheelConfig.sponsorsEnabled,
+                    fullConfigStructure: {
+                        hasCurrent: !!parsedStoredConfig.current,
+                        hasDefault: !!parsedStoredConfig.default,
+                        currentKeys: parsedStoredConfig.current ? Object.keys(parsedStoredConfig.current) : [],
+                        defaultKeys: parsedStoredConfig.default ? Object.keys(parsedStoredConfig.default) : []
+                    }
+                });
+                
+                // Sincronizar variables globales
                 syncGlobalVariables();
                 
                 // Verificar si hay configuración pendiente de guardar
@@ -250,6 +274,14 @@ function syncGlobalVariables() {
         window.wheelInstance.volume = wheelConfig.audio?.volume || 0.7;
         window.wheelInstance.isMuted = wheelConfig.audio?.isMuted || false;
     }
+    
+    console.log('🔄 Variables globales sincronizadas:', {
+        prizesCount: prizes.length,
+        colorPaletteCount: wheelColorPalette.length,
+        textColor: wheelTextColor,
+        negativePrizesBgColor: negativePrizesBgColor,
+        negativePrizesTextColor: negativePrizesTextColor
+    });
 }
 
 // Función para guardar configuración
@@ -258,11 +290,25 @@ function saveConfig() {
         // Guardar configuración actual en localStorage
         localStorage.setItem('wheelConfig', JSON.stringify(wheelConfig));
         
-        // Si hay fullConfig, también guardar la configuración completa
+        // Actualizar o crear fullConfig con la configuración actual
         if (fullConfig) {
+            // Actualizar la configuración actual en fullConfig
+            fullConfig.current = { ...wheelConfig };
             localStorage.setItem('fullWheelConfig', JSON.stringify(fullConfig));
-            console.log('✅ Configuración completa guardada en localStorage');
+            console.log('✅ Configuración completa actualizada y guardada en localStorage');
+        } else {
+            // Si no hay fullConfig, crear uno con la configuración actual
+            const newFullConfig = {
+                current: { ...wheelConfig },
+                default: defaultConfig
+            };
+            localStorage.setItem('fullWheelConfig', JSON.stringify(newFullConfig));
+            fullConfig = newFullConfig;
+            console.log('✅ Nueva configuración completa creada y guardada en localStorage');
         }
+        
+        // Sincronizar variables globales después de guardar
+        syncGlobalVariables();
         
         console.log('✅ Configuración guardada en localStorage');
     } catch (error) {

@@ -652,6 +652,68 @@ function removePrize(index) {
     }
 }
 
+// Verificar si el servidor está ejecutándose
+async function checkServerHealth() {
+    try {
+        const currentHost = window.location.origin;
+        
+        // Verificar si estamos accediendo desde file://
+        if (window.location.protocol === 'file:') {
+            console.error('❌ Acceso desde file:// detectado');
+            return false;
+        }
+        
+        console.log(`🔄 Verificando servidor en: ${currentHost}`);
+        
+        const response = await fetch(`${currentHost}/api/health`);
+        console.log(`🔄 Respuesta de health:`, {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Servidor verificado como disponible:', data);
+            return true;
+        } else {
+            console.warn(`⚠️ Servidor responde con status: ${response.status}`);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Servidor no disponible:', error);
+        return false;
+    }
+}
+
+// Función de prueba para debug
+async function testServerConnection() {
+    try {
+        const currentHost = window.location.origin;
+        console.log(`🔄 Probando conexión con servidor en: ${currentHost}`);
+        
+        const response = await fetch(`${currentHost}/api/debug`);
+        console.log(`🔄 Respuesta de debug:`, {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+            headers: Object.fromEntries(response.headers.entries())
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Conexión con servidor exitosa:', data);
+            return true;
+        } else {
+            console.error('❌ Error en conexión con servidor');
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Error probando conexión con servidor:', error);
+        return false;
+    }
+}
+
 // Cargar lista de presets desde el servidor
 async function loadPresetList() {
     const select = document.getElementById('presetSelect');
@@ -660,6 +722,26 @@ async function loadPresetList() {
     select.innerHTML = '<option value="">Cargando presets...</option>';
     
     try {
+        // Verificar servidor primero
+        const serverAvailable = await checkServerHealth();
+        if (!serverAvailable) {
+            select.innerHTML = '<option value="">Servidor no disponible</option>';
+            
+            let errorMessage = '⚠️ El servidor no está ejecutándose. Ejecuta "node server.js" para usar presets.';
+            
+            // Verificar si estamos accediendo desde file://
+            if (window.location.protocol === 'file:') {
+                errorMessage = '⚠️ Estás accediendo desde file://. Por favor, abre la aplicación desde http://localhost:3000 después de ejecutar "node server.js"';
+            } else if (window.location.origin !== 'http://localhost:3000') {
+                errorMessage = `⚠️ Estás accediendo desde ${window.location.origin}, pero el servidor está en http://localhost:3000. Por favor, abre la aplicación desde http://localhost:3000`;
+            }
+            
+            if (window.UtilsModule?.showStatus) {
+                window.UtilsModule.showStatus(errorMessage, 'warning');
+            }
+            return;
+        }
+        
         const currentHost = window.location.origin;
         const response = await fetch(`${currentHost}/api/presets/list`);
         
@@ -785,6 +867,11 @@ async function loadPreset() {
             // Cargar la configuración del preset
             Object.assign(wheelConfig, result.preset.config);
             
+            // Sincronizar variables globales inmediatamente después de cargar el preset
+            if (window.ConfigModule?.syncGlobalVariables) {
+                window.ConfigModule.syncGlobalVariables();
+            }
+            
             // Forzar guardado de configuración completa para asegurar persistencia
             // Este es el enfoque más directo y confiable
             try {
@@ -803,6 +890,10 @@ async function loadPreset() {
                 // Actualizar las variables en memoria para consistencia
                 if (window.ConfigModule) {
                     window.ConfigModule.fullConfig = fullConfigToSave;
+                    // También actualizar la variable fullConfig global en config.js
+                    if (window.ConfigModule.fullConfig) {
+                        window.ConfigModule.fullConfig = fullConfigToSave;
+                    }
                 }
                 
             } catch (error) {
@@ -811,6 +902,9 @@ async function loadPreset() {
             
             // Actualizar la interfaz
             loadCurrentSettings();
+            
+            // Aplicar cambios visuales inmediatamente
+            applyVisualChanges();
             
             // Actualizar la ruleta visualmente
             if (window.wheelInstance) {
@@ -822,11 +916,37 @@ async function loadPreset() {
                 window.UIModule.updateSponsorsDisplay();
             }
             
+            // Actualizar logo superior si está habilitado
+            if (window.UIModule?.updateTopLogoDisplay) {
+                window.UIModule.updateTopLogoDisplay();
+            }
+            
             if (window.UtilsModule?.showStatus) {
                 window.UtilsModule.showStatus(`Preset "${selectedName}" cargado exitosamente`, 'success');
             }
             
             console.log(`✅ Preset "${selectedName}" cargado desde servidor`);
+            
+            // Forzar recarga de configuración para asegurar persistencia completa
+            setTimeout(() => {
+                console.log('🔄 Forzando recarga de configuración para persistencia...');
+                if (window.ConfigModule?.syncGlobalVariables) {
+                    window.ConfigModule.syncGlobalVariables();
+                }
+                
+                // Re-aplicar cambios visuales después de un breve delay
+                setTimeout(() => {
+                    if (window.wheelInstance) {
+                        window.wheelInstance.drawWheel();
+                    }
+                    if (window.UIModule?.updateSponsorsDisplay) {
+                        window.UIModule.updateSponsorsDisplay();
+                    }
+                    if (window.UIModule?.updateTopLogoDisplay) {
+                        window.UIModule.updateTopLogoDisplay();
+                    }
+                }, 100);
+            }, 200);
         } else {
             throw new Error('Preset no encontrado o formato inválido');
         }
@@ -865,7 +985,36 @@ async function updatePreset() {
     
     try {
         const currentHost = window.location.origin;
-        const response = await fetch(`${currentHost}/api/presets/update/${encodeURIComponent(selectedName)}`, {
+        console.log(`🔄 Intentando actualizar preset "${selectedName}" en: ${currentHost}/api/presets/update/${encodeURIComponent(selectedName)}`);
+        
+        // Verificar que el servidor esté ejecutándose
+        try {
+            const healthResponse = await fetch(`${currentHost}/api/health`);
+            if (!healthResponse.ok) {
+                throw new Error(`Servidor no disponible (${healthResponse.status})`);
+            }
+            console.log('✅ Servidor verificado como disponible');
+        } catch (healthError) {
+            console.error('❌ Error verificando servidor:', healthError);
+            
+            // Verificar si estamos accediendo desde file://
+            if (window.location.protocol === 'file:') {
+                throw new Error('Estás accediendo desde file://. Por favor, abre la aplicación desde http://localhost:3000 después de ejecutar "node server.js"');
+            }
+            
+            // Verificar si estamos en un puerto diferente
+            if (currentHost !== 'http://localhost:3000') {
+                throw new Error(`Estás accediendo desde ${currentHost}, pero el servidor está en http://localhost:3000. Por favor, abre la aplicación desde http://localhost:3000`);
+            }
+            
+            throw new Error('El servidor no está ejecutándose. Por favor, ejecuta "node server.js" en la terminal.');
+        }
+        
+        const url = `${currentHost}/api/presets/update/${encodeURIComponent(selectedName)}`;
+        console.log(`🔄 URL completa: ${url}`);
+        console.log(`🔄 Datos a enviar:`, { config: wheelConfig });
+        
+        const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -875,12 +1024,51 @@ async function updatePreset() {
             })
         });
         
+        console.log(`🔄 Respuesta del servidor:`, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries())
+        });
+        
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            // Obtener el texto de la respuesta primero
+            let responseText;
+            try {
+                responseText = await response.text();
+            } catch (textError) {
+                console.error('❌ No se pudo leer la respuesta del servidor:', textError);
+                throw new Error(`Error del servidor (${response.status}): ${response.statusText}`);
+            }
+            
+            // Intentar parsear como JSON
+            try {
+                const errorData = JSON.parse(responseText);
+                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            } catch (jsonError) {
+                // Si no es JSON, usar el texto directamente
+                console.error('❌ Respuesta del servidor no es JSON:', responseText);
+                console.error('❌ Primeros 500 caracteres de la respuesta:', responseText.substring(0, 500));
+                throw new Error(`Error del servidor (${response.status}): ${response.statusText}. Respuesta: ${responseText.substring(0, 200)}...`);
+            }
         }
         
-        const result = await response.json();
+        let result;
+        try {
+            result = await response.json();
+        } catch (jsonError) {
+            // Si no es JSON válido, obtener el texto de la respuesta
+            let responseText;
+            try {
+                responseText = await response.text();
+            } catch (textError) {
+                console.error('❌ No se pudo leer la respuesta del servidor:', textError);
+                throw new Error('No se pudo leer la respuesta del servidor');
+            }
+            
+            console.error('❌ Respuesta del servidor no es JSON válido en updatePreset:', responseText);
+            console.error('❌ Primeros 500 caracteres de la respuesta:', responseText.substring(0, 500));
+            throw new Error(`Respuesta del servidor no es JSON válido. Respuesta: ${responseText.substring(0, 200)}...`);
+        }
         
         if (result.success) {
             await loadPresetList(); // Recargar lista desde servidor
@@ -1369,6 +1557,12 @@ function saveAllSettings() {
         const sponsorsEnabled = document.getElementById('sponsorsEnabled');
         if (sponsorsEnabled) {
             wheelConfig.sponsorsEnabled = sponsorsEnabled.checked;
+        }
+        
+        // Actualizar fullConfig para asegurar persistencia
+        if (window.ConfigModule?.fullConfig) {
+            window.ConfigModule.fullConfig.current = { ...wheelConfig };
+            console.log('🔄 fullConfig.current actualizado con nueva configuración');
         }
         
         // Guardar en localStorage como respaldo
@@ -2344,6 +2538,8 @@ window.UIModule = {
     updatePrize,
     addPrize,
     removePrize,
+    checkServerHealth,
+    testServerConnection,
     loadPresetList,
     savePreset,
     loadPreset,

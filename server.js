@@ -8,7 +8,7 @@ const PORT = 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Aumentar límite para configuraciones grandes
 
 // Servir archivos estáticos
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -113,6 +113,18 @@ app.get('/api/health', (req, res) => {
         status: 'OK', 
         message: 'Servidor de sponsors funcionando',
         timestamp: new Date().toISOString()
+    });
+});
+
+// Endpoint de prueba para debug
+app.get('/api/debug', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'Debug endpoint funcionando',
+        timestamp: new Date().toISOString(),
+        headers: req.headers,
+        method: req.method,
+        url: req.url
     });
 });
 

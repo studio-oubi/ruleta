@@ -477,6 +477,14 @@
                     }
                 }
                 
+                // Probar conexión con servidor para debug
+                setTimeout(async () => {
+                    console.log('🔄 Probando conexión con servidor...');
+                    if (window.UIModule?.testServerConnection) {
+                        await window.UIModule.testServerConnection();
+                    }
+                }, 1000);
+                
                 // Configurar listeners de fullscreen
                 document.addEventListener('fullscreenchange', () => {
                     if (window.UtilsModule?.updateFullscreenState) {
