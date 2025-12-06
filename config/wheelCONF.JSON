@@ -5,73 +5,55 @@
         "text": "TANQUE LLENO",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 4
       },
       {
-        "text": "NEVERA",
+        "text": "5 LAVADOS",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 10
       },
       {
         "text": "TINTADO",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "NEVERITA",
+        "text": "PORTAVINO CASE",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "US $300",
+        "text": "SOMBRILLA",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "US $100",
+        "text": "ALFOMBRAS",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "ACEITE AUTO",
+        "text": "CENA PARA DOS",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
-      },
-      {
-        "text": "ACCESORIO AUTO",
-        "quantity": 1,
-        "isNegative": false,
-        "inventory": 3
-      },
-      {
-        "text": "LAVADO PREMIUM",
-        "quantity": 1,
-        "isNegative": false,
-        "inventory": 3
+        "inventory": 2
       },
       {
         "text": "VUELVE A INTENTARLO",
-        "quantity": 3,
+        "quantity": 8,
         "isNegative": true,
         "hideText": false
       },
       {
-        "text": "MEJOR SUERTE",
-        "quantity": 2,
-        "isNegative": true,
-        "hideText": false
-      },
-      {
-        "text": "INTÉNTALO OTRA VEZ",
-        "quantity": 4,
-        "isNegative": true,
-        "hideText": false
+        "text": "ARTICULOS PRO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
       }
     ],
     "colorPalette": [
@@ -92,7 +74,7 @@
     "consolationColors": {
       "backgroundColor": "#000000",
       "textColor": "#ffffff",
-      "hideText": false
+      "hideText": true
     },
     "audio": {
       "volume": 0.7,
@@ -114,17 +96,7 @@
       "src": "images/Auto Americana Logo.svg",
       "enabled": true
     },
-    "grandPrizes": [
-      {
-        "enabled": true,
-        "name": "iPhone 15 Pro",
-        "probability": 0,
-        "colors": {
-          "backgroundColor": "#ffd700",
-          "textColor": "#000000"
-        }
-      }
-    ],
+    "grandPrizes": [],
     "sponsors": [
       {
         "id": "geely",
@@ -142,12 +114,6 @@
         "id": "kia",
         "src": "images/sponsors/kia.svg",
         "name": "Kia",
-        "fromFolder": true
-      },
-      {
-        "id": "banreservas",
-        "src": "images/sponsors/logo-banreservas-sin-slogan.png",
-        "name": "Banreservas",
         "fromFolder": true
       },
       {
@@ -165,73 +131,55 @@
         "text": "TANQUE LLENO",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 4
       },
       {
-        "text": "NEVERA",
+        "text": "5 LAVADOS",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 10
       },
       {
         "text": "TINTADO",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "NEVERITA",
+        "text": "PORTAVINO CASE",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "US $300",
+        "text": "SOMBRILLA",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "US $100",
+        "text": "ALFOMBRAS",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
+        "inventory": 5
       },
       {
-        "text": "ACEITE AUTO",
+        "text": "CENA PARA DOS",
         "quantity": 1,
         "isNegative": false,
-        "inventory": 3
-      },
-      {
-        "text": "ACCESORIO AUTO",
-        "quantity": 1,
-        "isNegative": false,
-        "inventory": 3
-      },
-      {
-        "text": "LAVADO PREMIUM",
-        "quantity": 1,
-        "isNegative": false,
-        "inventory": 3
+        "inventory": 2
       },
       {
         "text": "VUELVE A INTENTARLO",
-        "quantity": 3,
+        "quantity": 8,
         "isNegative": true,
         "hideText": false
       },
       {
-        "text": "MEJOR SUERTE",
-        "quantity": 2,
-        "isNegative": true,
-        "hideText": false
-      },
-      {
-        "text": "INTÉNTALO OTRA VEZ",
-        "quantity": 4,
-        "isNegative": true,
-        "hideText": false
+        "text": "ARTICULOS PRO",
+        "quantity": 1,
+        "isNegative": false,
+        "inventory": 3
       }
     ],
     "colorPalette": [
@@ -246,13 +194,13 @@
       "#45b7d1"
     ],
     "theme": {
-      "backgroundColor": "#7e1111",
+      "backgroundColor": "#6a1010",
       "textColor": "#ffffff"
     },
     "consolationColors": {
       "backgroundColor": "#000000",
       "textColor": "#ffffff",
-      "hideText": false
+      "hideText": true
     },
     "audio": {
       "volume": 0.7,
@@ -274,17 +222,7 @@
       "src": "images/Auto Americana Logo.svg",
       "enabled": true
     },
-    "grandPrizes": [
-      {
-        "enabled": true,
-        "name": "iPhone 15 Pro",
-        "probability": 0,
-        "colors": {
-          "backgroundColor": "#ffd700",
-          "textColor": "#000000"
-        }
-      }
-    ],
+    "grandPrizes": [],
     "sponsors": [
       {
         "id": "geely",
@@ -302,12 +240,6 @@
         "id": "kia",
         "src": "images/sponsors/kia.svg",
         "name": "Kia",
-        "fromFolder": true
-      },
-      {
-        "id": "banreservas",
-        "src": "images/sponsors/logo-banreservas-sin-slogan.png",
-        "name": "Banreservas",
         "fromFolder": true
       },
       {
