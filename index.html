@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Auto Americana</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@600;700;800&family=Fredoka:wght@700&family=Oswald:wght@400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="ruleta-style.css">
+    
+    <!-- Favicon dinámico -->
+    <link rel="icon" type="image/svg+xml" href="images/Auto Americana Logo.svg" id="dynamicFavicon">
+    <link rel="shortcut icon" href="images/Auto Americana Logo.svg" id="dynamicFaviconShortcut">
+</head>
+<body>
+    <!-- Fondo con rayos -->
+    <div class="rays-background"></div>
+    
+    <div class="ruleta-app">
+        <!-- Botón de configuración -->
+        <button class="settings-btn" id="settingsBtn"></button>
+        
+        
+        <!-- Contenedor de la ruleta -->
+        <div class="wheel-section">
+            <!-- Logo superior -->
+            <div class="top-logo-container" id="topLogoContainer">
+                <div id="topLogo" class="top-logo"></div>
+            </div>
+            
+            <div class="wheel-wrapper">
+                <!-- Base de la ruleta -->
+                <div class="wheel-base"></div>
+                
+                <!-- Canvas para los segmentos giratorios -->
+                <canvas id="wheelCanvas" width="600" height="600"></canvas>
+                
+                <!-- Centro estático con logo -->
+                <div class="wheel-center-static" id="wheelCenter">
+                    <div class="center-circle-static">
+                        <img src="images/Auto Americana Logo.svg" alt="Auto Americana" class="center-logo">
+                    </div>
+                </div>
+                
+                <!-- Aguja indicadora a la derecha -->
+                <div class="wheel-pointer">
+                    <span class="material-icons">location_on</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Carrusel de patrocinadores -->
+        <div class="sponsors-carousel" id="sponsorsCarousel">
+            <div class="sponsors-track" id="sponsorsTrack">
+                <!-- Los logos se generarán dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Modal de resultado -->
+        <div class="result-modal" id="resultModal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <button class="modal-close" id="modalClose">×</button>
+                <div class="prize-icon-large" id="modalIcon">⛽</div>
+                <h2 class="prize-title" id="modalTitle">Felicidades Ganaste un/a:</h2>
+                <p class="prize-name" id="modalPrize">TANQUE LLENO</p>
+            </div>
+        </div>
+        
+        <!-- Modal de configuración integrado -->
+        <div class="config-modal" id="configModal">
+            <div class="modal-overlay"></div>
+            <div class="config-content">
+                <div class="config-header">
+                    <h2 class="config-title">⚙️ Configuración de la Ruleta</h2>
+                    <button class="modal-close" id="configClose">&times;</button>
+                </div>
+                
+                <div class="config-body">
+                    <!-- Avatar & Logo -->
+                    <div class="config-section">
+                        <h3 class="section-title">🖼️ Logo & Avatar</h3>
+                        <div class="form-group">
+                            <label class="form-label">Logo Actual</label>
+                            <div class="logo-preview-container">
+                                <img id="logoPreview" class="logo-preview" src="images/Auto Americana Logo.svg" alt="Logo Preview">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cambiar Logo</label>
+                            <div class="file-upload" onclick="document.getElementById('logoInput').click()">
+                                <input type="file" id="logoInput" accept="image/*">
+                                <div class="file-upload-text">
+                                    <p>📁 Haz clic para seleccionar una imagen</p>
+                                    <p class="file-hint">Formatos: JPG, PNG, SVG (máx. 2MB)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Ancho del Logo Central</label>
+                            <div class="range-control">
+                                <input type="range" id="logoWidthSlider" class="range-slider" min="20" max="80" value="45">
+                                <span id="logoWidthValue">45%</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-secondary" onclick="resetLogo()">🔄 Restaurar Logo Original</button>
+                    </div>
+
+                    <!-- Logo Superior -->
+                    <div class="config-section">
+                        <h3 class="section-title">🖼️ Logo Superior</h3>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="topLogoEnabled" class="checkbox-input">
+                                Mostrar Logo Superior
+                            </label>
+                        </div>
+                        <div class="form-group" id="topLogoControls" style="display: none;">
+                            <label class="form-label">Logo Superior Actual</label>
+                            <div class="logo-preview-container">
+                                <img id="topLogoPreview" class="logo-preview" src="" alt="Top Logo Preview">
+                            </div>
+                        </div>
+                        <div class="form-group" id="topLogoFileControls" style="display: none;">
+                            <label class="form-label">Cambiar Logo Superior</label>
+                            <div class="file-upload" onclick="document.getElementById('topLogoInput').click()">
+                                <input type="file" id="topLogoInput" accept="image/*">
+                                <div class="file-upload-text">
+                                    <p>📁 Haz clic para seleccionar una imagen</p>
+                                    <p class="file-hint">Formatos: JPG, PNG, SVG (máx. 2MB)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-secondary" id="resetTopLogo" style="display: none;" onclick="resetTopLogo()">🔄 Restaurar Logo Superior Original</button>
+                    </div>
+
+                    <!-- Audio -->
+                    <div class="config-section">
+                        <h3 class="section-title">🔊 Audio</h3>
+                        <div class="form-group">
+                            <label class="form-label">Volumen</label>
+                            <div class="volume-control">
+                                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+                                <span id="volumeValue">70%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="muteCheckbox" class="form-checkbox">
+                                Silenciar Audio
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="fullscreenCheckbox" class="form-checkbox">
+                                Modo Pantalla Completa
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tema Visual -->
+                    <div class="config-section">
+                        <h3 class="section-title">🎨 Tema Visual</h3>
+                        <div class="form-group">
+                            <label class="form-label">Color de Fondo Principal</label>
+                            <div class="color-picker-container">
+                                <div class="color-swatch" id="bgColorSwatch" style="background-color: #d6005d;"></div>
+                                <input type="color" id="bgColorInput" class="color-input" value="#d6005d">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Color de Texto</label>
+                            <div class="color-picker-container">
+                                <div class="color-swatch" id="textColorSwatch" style="background-color: #ffffff; border: 2px solid #e5e7eb;"></div>
+                                <input type="color" id="textColorInput" class="color-input" value="#ffffff">
+                            </div>
+                        </div>
+                        <h4 class="subsection-title">Colores de Premios de Consuelo</h4>
+                        <div class="form-group">
+                            <label class="form-label">Fondo de Consuelo</label>
+                            <div class="color-picker-container">
+                                <div class="color-swatch" id="consolationBgSwatch" style="background-color: #000000;"></div>
+                                <input type="color" id="consolationBgInput" class="color-input" value="#000000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Texto de Consuelo</label>
+                            <div class="color-picker-container">
+                                <div class="color-swatch" id="consolationTextSwatch" style="background-color: #ffffff; border: 2px solid #e5e7eb;"></div>
+                                <input type="color" id="consolationTextInput" class="color-input" value="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paleta de Colores -->
+                    <div class="config-section">
+                        <h3 class="section-title">🌈 Paleta de Colores</h3>
+                        <div class="color-palette-container" id="colorPaletteList">
+                            <!-- Se genera dinámicamente -->
+                        </div>
+                        <button type="button" class="add-color-btn" onclick="addColorToPalette()">+ Agregar Color</button>
+                    </div>
+
+                    <!-- Gestión de Premios -->
+                    <div class="config-section">
+                        <h3 class="section-title">🎁 Gestión de Premios</h3>
+                        <div class="prizes-container">
+                            <div class="prizes-section">
+                                <h4 class="prizes-section-title">🎁 Premios Reales</h4>
+                                <div id="realPrizesList">
+                                    <!-- Se genera dinámicamente -->
+                                </div>
+                                <button type="button" class="add-prize-btn" onclick="addPrize(false)">+ Agregar Premio Real</button>
+                            </div>
+                            <div class="prizes-section">
+                                <h4 class="prizes-section-title">🔄 Opciones de Consuelo</h4>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <input type="checkbox" id="hideConsolationText" class="form-checkbox">
+                                        Ocultar texto de consolación en la ruleta
+                                    </label>
+                                </div>
+                                <div id="negativePrizesList">
+                                    <!-- Se genera dinámicamente -->
+                                </div>
+                                <button type="button" class="add-prize-btn" onclick="addPrize(true)">+ Agregar Consuelo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gran Premios -->
+                    <div class="config-section">
+                        <h3 class="section-title">🏆 Gran Premios</h3>
+                        <div class="form-group">
+                            <button onclick="addGrandPrize()" class="btn btn-primary">+ Agregar Grand Prize</button>
+                        </div>
+                        <div id="grandPrizesList" class="grand-prizes-container">
+                            <!-- Los grand prizes se renderizarán aquí dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div class="config-section">
+                        <h3 class="section-title">📝 Contenido</h3>
+                        <div class="form-group">
+                            <label class="form-label">Texto de Felicitaciones</label>
+                            <input type="text" id="congratsText" class="form-input" placeholder="Felicidades Ganaste un/a:">
+                        </div>
+                    </div>
+
+                    <!-- Patrocinadores -->
+                    <div class="config-section">
+                        <h3 class="section-title">🏢 Patrocinadores</h3>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="sponsorsEnabled" class="form-checkbox">
+                                Mostrar Patrocinadores
+                            </label>
+                        </div>
+                        <div class="form-group" id="sponsorsControls" style="display: none;">
+                            <label class="form-label">Agregar Logos de Patrocinadores</label>
+                            <div class="file-upload" onclick="document.getElementById('sponsorInput').click()">
+                                <input type="file" id="sponsorInput" accept="image/*" multiple>
+                                <div class="file-upload-text">
+                                    <p>📁 Haz clic para seleccionar imágenes</p>
+                                    <p class="file-hint">Formatos: JPG, PNG, SVG (máx. 2MB cada uno)</p>
+                                    <p class="file-hint">💡 Puedes seleccionar múltiples archivos a la vez</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="sponsorsList" style="display: none;">
+                            <label class="form-label">Logos de Patrocinadores</label>
+                            <div class="sponsors-stats">
+                                <p class="sponsors-count">Total de logos: <span id="sponsorsCount">0</span></p>
+                                <button type="button" class="btn-secondary" onclick="loadSponsorsFromFolder()">🔄 Recargar desde carpeta</button>
+                            </div>
+                            <div id="sponsorsPreview" class="sponsors-preview-container">
+                                <!-- Se genera dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="form-group" id="sponsorsFilter" style="display: none;">
+                            <label class="form-label">Filtro de Color para Logos</label>
+                            <div class="filter-controls">
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterHue" class="form-checkbox">
+                                        Matiz (Hue)
+                                    </label>
+                                    <input type="range" id="hueSlider" class="filter-slider" min="0" max="360" value="0">
+                                    <span id="hueValue">0°</span>
+                                </div>
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterSaturation" class="form-checkbox">
+                                        Saturación
+                                    </label>
+                                    <input type="range" id="saturationSlider" class="filter-slider" min="0" max="200" value="100">
+                                    <span id="saturationValue">100%</span>
+                                </div>
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterBrightness" class="form-checkbox">
+                                        Brillo
+                                    </label>
+                                    <input type="range" id="brightnessSlider" class="filter-slider" min="0" max="200" value="100">
+                                    <span id="brightnessValue">100%</span>
+                                </div>
+                                <div class="filter-option">
+                                    <label class="filter-label">
+                                        <input type="checkbox" id="filterContrast" class="form-checkbox">
+                                        Contraste
+                                    </label>
+                                    <input type="range" id="contrastSlider" class="filter-slider" min="0" max="200" value="100">
+                                    <span id="contrastValue">100%</span>
+                                </div>
+                                <button type="button" class="btn-secondary" onclick="resetSponsorFilters()">🔄 Resetear Filtros</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Presets -->
+                    <div class="config-section">
+                        <h3 class="section-title">💾 Presets</h3>
+                        <div class="form-group">
+                            <div class="preset-save">
+                                <input type="text" id="presetName" class="form-input" placeholder="Nombre del preset">
+                                <button type="button" class="btn-primary" onclick="savePreset()">💾 Guardar</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="preset-load">
+                                <select id="presetSelect" class="form-input">
+                                    <option value="">Seleccionar preset...</option>
+                                </select>
+                                <button type="button" class="btn-secondary" onclick="loadPreset()">📂 Cargar</button>
+                                <button type="button" class="btn-primary" onclick="updatePreset()">🔄 Actualizar</button>
+                                <button type="button" class="btn-danger" onclick="deletePreset()">🗑️ Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opciones de Reset -->
+                    <div class="config-section danger-section">
+                        <h3 class="section-title">🔄 Opciones de Reset</h3>
+                        <div class="reset-actions">
+                            <button type="button" class="btn-danger" onclick="restoreDefaults()">🔄 Restaurar Defaults</button>
+                            <button type="button" class="btn-secondary" onclick="setAsDefault()">⭐ Establecer como Default</button>
+                            <button type="button" class="btn-secondary" onclick="downloadConfig()">📁 Descargar JSON</button>
+                            <button type="button" class="btn-warning" onclick="clearSiteCache()">🗑️ Limpiar Cache</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-footer">
+                    <button type="button" class="btn-primary" onclick="saveAllSettings()">💾 Guardar Configuración</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+    
+    <!-- Módulos de la ruleta -->
+    <script src="js/config.js"></script>
+    <script src="js/prizes.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/wheel.js"></script>
+    <script src="js/ui.js"></script>
+    
+    <!-- Script de inicialización -->
+    <script>
+        // Inicializar la ruleta cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Iniciando aplicación de ruleta...');
+            
+            try {
+                // Cargar configuración
+                if (window.ConfigModule?.loadWheelConfig) {
+                    await window.ConfigModule.loadWheelConfig();
+                }
+                
+                // Aplicar configuración visual
+                const wheelConfig = window.ConfigModule?.wheelConfig;
+                if (wheelConfig) {
+                    // Aplicar texto de felicitaciones
+                    const congratsText = wheelConfig.text?.congratsText || 'Felicidades Ganaste un/a:';
+                    const modalTitle = document.getElementById('modalTitle');
+                    if (modalTitle) {
+                        modalTitle.textContent = congratsText;
+                    }
+                    
+                    // Aplicar color de fondo
+                    const bgColor = wheelConfig.theme?.backgroundColor || '#d6005d';
+                    const raysBackground = document.querySelector('.rays-background');
+                    if (raysBackground && window.UtilsModule?.generateRaysGradient) {
+                        raysBackground.style.backgroundColor = bgColor;
+                        const raysGradient = window.UtilsModule.generateRaysGradient(bgColor);
+                        raysBackground.style.background = `${raysGradient}, ${bgColor}`;
+                    }
+                    
+                    // Aplicar logo
+                    const logo = document.querySelector('.center-logo');
+                    if (logo) {
+                        const logoSrc = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
+                        logo.src = logoSrc;
+                        console.log('🖼️ Logo aplicado:', logoSrc);
+                    }
+                    
+                    // Aplicar logo superior
+                    if (window.UIModule?.updateTopLogoDisplay) {
+                        console.log('🔄 Aplicando configuración del logo superior...');
+                        console.log('🔍 Configuración topLogo:', wheelConfig.topLogo);
+                        window.UIModule.updateTopLogoDisplay();
+                    }
+                    
+                    // Actualizar favicon
+                    if (window.UtilsModule?.updateFavicon) {
+                        const faviconSrc = wheelConfig.logo?.src || 'images/Auto Americana Logo.svg';
+                        window.UtilsModule.updateFavicon(faviconSrc);
+                        console.log('🔄 Favicon actualizado:', faviconSrc);
+                    }
+                } else {
+                    console.warn('⚠️ wheelConfig no disponible, aplicando configuración por defecto');
+                    
+                    // Aplicar logo por defecto si no hay configuración
+                    const logo = document.querySelector('.center-logo');
+                    if (logo) {
+                        logo.src = 'images/Auto Americana Logo.svg';
+                        console.log('🖼️ Logo por defecto aplicado');
+                    }
+                    
+                    // Aplicar logo superior por defecto
+                    const topLogo = document.getElementById('topLogo');
+                    const topLogoContainer = document.getElementById('topLogoContainer');
+                    if (topLogo && topLogoContainer) {
+                        topLogo.style.setProperty('background-image', 'url(images/top-logo.png)', 'important');
+                        topLogoContainer.style.setProperty('display', 'block', 'important');
+                        topLogoContainer.style.setProperty('visibility', 'visible', 'important');
+                        console.log('🖼️ Logo superior por defecto aplicado');
+                    }
+                }
+                
+                // Inicializar AudioManager
+                if (window.AudioModule?.initAudioManager) {
+                    window.AudioModule.initAudioManager();
+                }
+                
+                // Crear instancia de la ruleta
+                if (window.WheelModule?.PrizeWheel) {
+                    const wheelInstance = new window.WheelModule.PrizeWheel();
+                    wheelInstance.init();
+                    window.wheelInstance = wheelInstance;
+                }
+                
+                // Inicializar configuración de UI
+                if (window.UIModule?.initSettings) {
+                    window.UIModule.initSettings();
+                }
+                
+                // Cargar configuración actual en la interfaz
+                if (window.UIModule?.loadCurrentSettings) {
+                    window.UIModule.loadCurrentSettings();
+                }
+                
+                // Inicializar carrusel de patrocinadores DESPUÉS de cargar configuración
+                if (window.UIModule?.initSponsorsCarousel) {
+                    window.UIModule.initSponsorsCarousel();
+                }
+                
+                // Cargar sponsors automáticamente si están habilitados
+                if (window.ConfigModule?.wheelConfig?.sponsorsEnabled && window.ConfigModule?.wheelConfig?.sponsors) {
+                    console.log('🔄 Cargando sponsors existentes...');
+                    if (window.UIModule?.renderSponsorsCarousel) {
+                        window.UIModule.renderSponsorsCarousel();
+                    }
+                    if (window.UIModule?.updateSponsorsDisplay) {
+                        window.UIModule.updateSponsorsDisplay();
+                    }
+                }
+                
+                // Probar conexión con servidor para debug
+                setTimeout(async () => {
+                    console.log('🔄 Probando conexión con servidor...');
+                    if (window.UIModule?.testServerConnection) {
+                        await window.UIModule.testServerConnection();
+                    }
+                }, 1000);
+                
+                // Configurar listeners de fullscreen
+                document.addEventListener('fullscreenchange', () => {
+                    if (window.UtilsModule?.updateFullscreenState) {
+                        window.UtilsModule.updateFullscreenState();
+                    }
+                });
+                document.addEventListener('webkitfullscreenchange', () => {
+                    if (window.UtilsModule?.updateFullscreenState) {
+                        window.UtilsModule.updateFullscreenState();
+                    }
+                });
+                document.addEventListener('msfullscreenchange', () => {
+                    if (window.UtilsModule?.updateFullscreenState) {
+                        window.UtilsModule.updateFullscreenState();
+                    }
+                });
+                
+                console.log('✅ Ruleta inicializada correctamente con todos los módulos');
+                
+                // Diagnóstico de premios
+                setTimeout(() => {
+                    console.log('🔍 DIAGNÓSTICO DE PREMIOS:');
+                    const wheelConfig = window.ConfigModule?.wheelConfig;
+                    if (wheelConfig) {
+                        console.log('✅ wheelConfig disponible:', wheelConfig);
+                        console.log('✅ Premios en configuración:', wheelConfig.prizes?.length || 0);
+                        console.log('✅ Premios detalle:', wheelConfig.prizes);
+                        
+                        if (window.PrizesModule?.distributePrizesWithConsolationSpacing) {
+                            const distributedPrizes = window.PrizesModule.distributePrizesWithConsolationSpacing(wheelConfig.prizes);
+                            console.log('✅ Premios distribuidos:', distributedPrizes.length);
+                            console.log('✅ Premios distribuidos detalle:', distributedPrizes);
+                        } else {
+                            console.error('❌ PrizesModule no disponible');
+                        }
+                    } else {
+                        console.error('❌ wheelConfig no disponible');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Error inicializando la ruleta:', error);
+            }
+        });
+    </script>
+</body>
+</html>
